@@ -192,32 +192,6 @@ public class BackgroundSetup : MonoBehaviour
             // Eliminar fondos no deseados primero
             RemoveUnwantedBackgrounds();
 
-            // Buscar todos los fondos existentes por nombre
-            GameObject existingBackground = GameObject.Find("CustomBackground");
-            if (existingBackground != null)
-            {
-                Debug.Log("BackgroundSetup: Destruyendo fondo existente: " + existingBackground.name);
-                Destroy(existingBackground);
-            }
-
-            // Buscar por tag como alternativa
-            try
-            {
-                GameObject[] taggedBackgrounds = GameObject.FindGameObjectsWithTag("Background");
-                if (taggedBackgrounds != null && taggedBackgrounds.Length > 0)
-                {
-                    foreach (GameObject bg in taggedBackgrounds)
-                    {
-                        Debug.Log("BackgroundSetup: Destruyendo fondo con tag Background: " + bg.name);
-                        Destroy(bg);
-                    }
-                }
-            }
-            catch (System.Exception)
-            {
-                Debug.LogWarning("BackgroundSetup: No se pudo buscar objetos con tag 'Background'. Posiblemente el tag no existe.");
-            }
-
             // Asegurarse de que existe la cámara principal antes de continuar
             if (Camera.main == null)
             {
@@ -234,111 +208,42 @@ public class BackgroundSetup : MonoBehaviour
         {
             Debug.LogError("BackgroundSetup: Error al forzar la actualización del fondo: " + e.Message);
         }
-    }    // Método para buscar y eliminar fondos verdes u otros fondos no deseados
+    }// Método para buscar y eliminar fondos verdes u otros fondos no deseados
     private void RemoveUnwantedBackgrounds()
     {
         Debug.Log("BackgroundSetup: Buscando y eliminando fondos no deseados...");
 
         try
         {
-            // Buscar específicamente objetos SpawnerMarker y eliminarlos
-            GameObject[] spawnerMarkers = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None)
-                .Where(obj => obj.name == "SpawnerMarker").ToArray();
-
-            foreach (GameObject marker in spawnerMarkers)
+            // Buscar fondos existentes por nombre
+            GameObject existingBackground = GameObject.Find("CustomBackground");
+            if (existingBackground != null && existingBackground != gameObject)
             {
-                Debug.Log("BackgroundSetup: Encontrado y eliminando SpawnerMarker: " + marker.name);
-                Destroy(marker);
+                Debug.Log("BackgroundSetup: Encontrado fondo personalizado existente. Eliminando para crear uno nuevo.");
+                Destroy(existingBackground);
             }
-
-            // Continuar con la búsqueda normal de fondos no deseados
-            // Buscar todos los GameObjects en la escena que podrían ser fondos
-            GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            
+            // Simplificación: solo buscar objetos con nombres específicos de fondo
+            GameObject[] potentialBackgrounds = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None)
+                .Where(obj => 
+                    (obj.name.Contains("Background") || obj.name.Contains("backdrop") || obj.name.Contains("_bg")) && 
+                    obj != gameObject && 
+                    obj.name != "CustomBackground" && 
+                    !obj.name.Contains("Manager") && 
+                    !obj.name.Contains("Camera") && 
+                    !obj.name.Contains("Player") && 
+                    !obj.name.Contains("Canvas") && 
+                    !obj.name.Contains("UI")
+                ).ToArray();
+            
             int removedCount = 0;
-
-            foreach (GameObject obj in allObjects)
+            foreach (GameObject bg in potentialBackgrounds)
             {
-                // Ignorar nuestro propio objeto
-                if (obj == gameObject || obj.name == "CustomBackground")
-                    continue;
-
-                bool shouldRemove = false;
-
-                // 1. Verificar por nombre si podría ser un fondo
-                if (obj.name.Contains("Background") ||
-                    obj.name.Contains("backdrop") ||
-                    obj.name.Contains("_bg") ||
-                    obj.name.Contains("Plane"))
-                {
-                    Debug.Log("BackgroundSetup: Encontrado posible fondo por nombre: " + obj.name);
-                    shouldRemove = true;
-                }
-
-                // 2. Verificar si tiene un SpriteRenderer con características de fondo
-                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    // Si tiene sorting order muy bajo (típico de fondos)
-                    if (sr.sortingOrder <= -10)
-                    {
-                        Debug.Log("BackgroundSetup: Encontrado SpriteRenderer con sorting order bajo: " + obj.name + " (" + sr.sortingOrder + ")");
-                        shouldRemove = true;
-                    }
-                    // Si tiene color verde dominante (fondos de prueba Unity)
-                    Color color = sr.color;
-                    if (color.g > color.r || color.g > color.b) // Menos restrictivo para detectar cualquier tinte verde
-                    {
-                        Debug.Log("BackgroundSetup: Encontrado SpriteRenderer con color verde: " + obj.name + ", Color: " + color);
-                        shouldRemove = true;
-                    }
-
-                    // Si no tiene sprite pero es visible
-                    if (sr.sprite == null && sr.enabled)
-                    {
-                        Debug.Log("BackgroundSetup: Encontrado SpriteRenderer sin sprite: " + obj.name);
-                        shouldRemove = true;
-                    }
-                }
-
-                // 3. Verificar si tiene un Renderer que no sea SpriteRenderer y está en una posición de fondo
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null && !(renderer is SpriteRenderer))
-                {
-                    // Si está posicionado detrás (Z positivo grande en un juego 2D)
-                    if (obj.transform.position.z > 0)
-                    {
-                        Debug.Log("BackgroundSetup: Encontrado Renderer en posición de fondo (Z = " + obj.transform.position.z + "): " + obj.name);
-                        shouldRemove = true;
-                    }
-                }
-
-                // 4. Verificar por escala muy grande (típico de fondos que cubren toda la pantalla)
-                if (obj.transform.localScale.x > 10 && obj.transform.localScale.y > 10)
-                {
-                    Debug.Log("BackgroundSetup: Encontrado objeto con escala muy grande: " + obj.name);
-                    shouldRemove = true;
-                }
-
-                // 5. Excluir objetos importantes que no deben eliminarse
-                if (obj.name.Contains("Manager") ||
-                    obj.name.Contains("Camera") ||
-                    obj.name.Contains("Player") ||
-                    obj.name.Contains("Canvas") ||
-                    obj.name.Contains("UI") ||
-                    obj.GetComponent<Camera>() != null)
-                {
-                    shouldRemove = false;
-                }
-
-                // Si debe eliminarse, hacerlo
-                if (shouldRemove)
-                {
-                    Debug.Log("BackgroundSetup: Eliminando fondo no deseado: " + obj.name);
-                    Destroy(obj);
-                    removedCount++;
-                }
+                Debug.Log("BackgroundSetup: Eliminando fondo potencial: " + bg.name);
+                Destroy(bg);
+                removedCount++;
             }
-
+            
             Debug.Log("BackgroundSetup: Eliminados " + removedCount + " objetos de fondo no deseados");
         }
         catch (System.Exception e)
