@@ -17,7 +17,7 @@ public class AsteroidSpawner : MonoBehaviour
     public float difficultyIncreaseTime = 30f;  // Cada cuánto aumenta la dificultad (segundos)
 
     private float nextSpawnTime;
-    private int asteroidsInScene = 0;    void Start()
+    private int asteroidsInScene = 0; void Start()
     {
         // Validar que haya al menos un prefab asignado
         if (asteroidPrefabs == null || asteroidPrefabs.Length == 0)
@@ -89,7 +89,8 @@ public class AsteroidSpawner : MonoBehaviour
         {
             Debug.LogError("No se pudo instanciar el asteroide.");
             return;
-        }        asteroidsInScene++;
+        }
+        asteroidsInScene++;
 
         // Configurar dirección hacia abajo con ligera variación aleatoria
         AsteroidController controller = asteroid.GetComponent<AsteroidController>();
@@ -111,7 +112,8 @@ public class AsteroidSpawner : MonoBehaviour
         {
             Debug.LogError($"El asteroide {asteroid.name} no tiene un SpriteRenderer con un sprite asignado.");
             // Solamente registramos el error, pero no creamos marcadores visuales para evitar fondos no deseados
-        }        else
+        }
+        else
         {
             // El asteroide ya tiene un SpriteRenderer con un sprite asignado
         }

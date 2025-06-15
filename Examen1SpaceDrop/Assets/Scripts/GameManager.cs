@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             // Buscar si existe un GameManager en la escena
-            GameManager existingManager = FindAnyObjectByType<GameManager>();            if (existingManager != null)
+            GameManager existingManager = FindAnyObjectByType<GameManager>(); if (existingManager != null)
             {
                 Instance = existingManager;
             }
@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverUI; // Panel de Game Over
 
     [Header("Audio")]
-    public AudioClip gameOverSound;    public AudioClip scoreSound;
-    
+    public AudioClip gameOverSound; public AudioClip scoreSound;
+
     private AudioSource audioSource;
 
     void Awake()
@@ -113,9 +113,10 @@ public class GameManager : MonoBehaviour
 
     // Método para terminar el juego
     public void GameOver()
-    {        if (!isGameOver)
+    {
+        if (!isGameOver)
         {
-            isGameOver = true;            if (audioSource != null && gameOverSound != null)
+            isGameOver = true; if (audioSource != null && gameOverSound != null)
             {
                 audioSource.PlayOneShot(gameOverSound);
             }            // Mostrar panel de Game Over
@@ -145,7 +146,8 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(currentScene.name);
     }// Método para aumentar la puntuación
     public void AddScore(int points)
-    {        if (!isGameOver)
+    {
+        if (!isGameOver)
         {
             score += points;
 

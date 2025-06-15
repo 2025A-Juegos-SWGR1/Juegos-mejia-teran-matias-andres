@@ -50,14 +50,15 @@ public class AsteroidController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, randomRotation);        // Si ya se ha establecido una dirección mediante SetDirection, usarla
         // De lo contrario, usar la dirección por defecto (hacia abajo)        rb.linearVelocity = direction * speed;
         isInitialized = true;
-    }    void Update()
+    }
+    void Update()
     {
         // Rotar el asteroide continuamente
         transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
 
         // Destruir el asteroide si sale de la pantalla
         if (transform.position.y < -6f ||
-            transform.position.y > 6f ||            transform.position.x < -10f ||
+            transform.position.y > 6f || transform.position.x < -10f ||
             transform.position.x > 10f)
         {
             Destroy(gameObject);
