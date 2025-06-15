@@ -82,75 +82,86 @@ public class AsteroidController : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Si choca con un disparo del jugador - comprobar si existe la etiqueta primero
-        try
+        // Si choca con un disparo del jugador
+        if (IsPlayerBullet(other.gameObject))
         {
-            // Solo intentar comparar con PlayerBullet si la etiqueta existe
-            if (other.gameObject.tag == "PlayerBullet" || other.name.Contains("Bullet") || other.name.Contains("bullet"))
-            {
-                // Sumar puntos
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.AddScore(pointValue);
-                }
-
-                // Instanciar explosión si existe
-                if (explosionPrefab != null)
-                {
-                    Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-                }
-
-                // Destruir el disparo
-                Destroy(other.gameObject);
-
-                // Destruir el asteroide
-                Destroy(gameObject);
-
-                return; // Ya procesamos la colisión, salir
-            }
+            HandleBulletCollision(other.gameObject);
+            return; // Ya procesamos la colisión, salir
         }
-        catch (System.Exception)
+
+        // Si choca con el jugador
+        if (IsPlayer(other.gameObject))
         {
-            // Ignorar errores de etiquetas no definidas
-            if (showDebugInfo)
-            {
-                Debug.Log("Advertencia: La etiqueta PlayerBullet no está definida. Considera crearla en Edit > Project Settings > Tags and Layers");
-            }
-        }        // Si choca con el jugador - verificar si existe la etiqueta
-        try
-        {
-            if (other.CompareTag("Player") || other.name.Contains("Player") || other.name.Contains("player"))
-            {
-                if (showDebugInfo)
-                {
-                    Debug.Log("Asteroide colisionó con el jugador");
-                }
-
-                // Instanciar explosión para el jugador si existe el prefab
-                if (explosionPrefab != null)
-                {
-                    Instantiate(explosionPrefab, other.transform.position, Quaternion.identity);
-                }
-
-                // Destruir la nave del jugador
-                Destroy(other.gameObject);
-
-                // Notificar al GameManager si existe
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.GameOver();
-                }
-            }
+            HandlePlayerCollision(other.gameObject);
         }
-        catch (System.Exception)
+    }
+
+    // Método para verificar si es un disparo del jugador
+    private bool IsPlayerBullet(GameObject obj)
+    {
+        return obj.CompareTag("PlayerBullet") ||
+               obj.name.Contains("Bullet") ||
+               obj.name.Contains("bullet");
+    }
+
+    // Método para verificar si es el jugador
+    private bool IsPlayer(GameObject obj)
+    {
+        return obj.CompareTag("Player") ||
+               obj.name.Contains("Player") ||
+               obj.name.Contains("player");
+    }
+
+    // Método para manejar la colisión con un disparo
+    private void HandleBulletCollision(GameObject bullet)
+    {
+        // Sumar puntos
+        if (GameManager.Instance != null)
         {
-            // Ignorar errores de etiquetas
-            if (showDebugInfo)
-            {
-                Debug.Log("Advertencia: La etiqueta Player no está definida. Considera crearla en Edit > Project Settings > Tags and Layers");
-            }
+            GameManager.Instance.AddScore(pointValue);
         }
-    }    // Método para establecer una dirección personalizada
+
+        // Instanciar explosión si existe
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+
+        // Destruir el disparo
+        Destroy(bullet);
+
+        // Destruir el asteroide
+        Destroy(gameObject);
+
+        if (showDebugInfo)
+        {
+            Debug.Log("Asteroide destruido por disparo del jugador");
+        }
+    }
+
+    // Método para manejar la colisión con el jugador
+    private void HandlePlayerCollision(GameObject player)
+    {
+        if (showDebugInfo)
+        {
+            Debug.Log("Asteroide colisionó con el jugador");
+        }
+
+        // Instanciar explosión para el jugador si existe el prefab
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, player.transform.position, Quaternion.identity);
+        }
+
+        // Destruir la nave del jugador
+        Destroy(player);
+
+        // Notificar al GameManager si existe
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GameOver();
+        }
+    }// Método para establecer una dirección personalizada
     public void SetDirection(Vector2 newDirection)
     {
         direction = newDirection.normalized;        // Si ya está inicializado, actualizar la velocidad inmediatamente

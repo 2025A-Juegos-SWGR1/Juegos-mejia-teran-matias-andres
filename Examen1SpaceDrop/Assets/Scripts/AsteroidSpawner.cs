@@ -36,20 +36,16 @@ public class AsteroidSpawner : MonoBehaviour
             {
                 Debug.LogError("Uno de los prefabs de asteroides es null. Revisa los prefabs asignados al spawner.");
                 // No deshabilitar el script, solo advertir
-            }        }
+            }
+        }
         // Asegurarse de que este objeto no se destruya fácilmente
         Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
-        
+
         // Iniciar el spawner inmediatamente para el primer asteroide
         Debug.Log("Intentando crear el primer asteroide...");
-        SpawnAsteroid();
-
-        // Iniciar el aumento de dificultad
+        SpawnAsteroid();        // Iniciar el aumento de dificultad
         InvokeRepeating("IncreaseDifficulty", difficultyIncreaseTime, difficultyIncreaseTime);
-
-        // Para debugging, crear asteroides cada 3 segundos sin importar otras configuraciones
-        InvokeRepeating("ForceSpawnAsteroid", 3, 3);
 
         // Mostrar mensaje de confirmación
         Debug.Log("Spawner de asteroides iniciado. Generando asteroides cada " + minSpawnTime + "-" + maxSpawnTime + " segundos.");
@@ -125,39 +121,16 @@ public class AsteroidSpawner : MonoBehaviour
         else
         {
             Debug.LogWarning("El asteroide no tiene componente AsteroidController. Asegúrate de que el prefab tiene este componente.");
-        }
-
-        // Verificar que el asteroide tenga un sprite visible
+        }        // Verificar que el asteroide tenga un sprite visible
         SpriteRenderer renderer = asteroid.GetComponent<SpriteRenderer>();
         if (renderer == null || renderer.sprite == null)
         {
             Debug.LogError($"El asteroide {asteroid.name} no tiene un SpriteRenderer con un sprite asignado.");
-
-            // Crear un GameObject temporal con un sprite visible para marcar la posición
-            GameObject marker = new GameObject($"Marker_{asteroid.name}");
-            marker.transform.position = asteroid.transform.position;
-
-            // Crear un cuadrado simple (primitiva) para visualizar
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.SetParent(marker.transform);
-            cube.transform.localPosition = Vector3.zero;
-            cube.transform.localScale = new Vector3(0.5f, 0.5f, 0.1f);
-
-            // Darle un color brillante
-            if (cube.GetComponent<Renderer>())
-            {
-                cube.GetComponent<Renderer>().material.color = Color.red;
-            }
-
-            Debug.Log($"Creado marcador visual (cubo rojo) para el asteroide {asteroid.name} en {spawnPosition}");
-
-            // Destruir el marcador después de un tiempo
-            Destroy(marker, 15f);
+            // Solamente registramos el error, pero no creamos marcadores visuales para evitar fondos no deseados
         }
         else
         {
             // El asteroide ya tiene un SpriteRenderer con un sprite asignado
-            // Mantener su apariencia original sin modificar color ni escala
             Debug.Log($"Asteroide {asteroid.name} creado correctamente con su sprite original.");
         }
 
@@ -204,14 +177,6 @@ public class AsteroidSpawner : MonoBehaviour
 
         // Asegurar que no baje del mínimo establecido
         minSpawnTime = Mathf.Max(minSpawnTime, minSpawnTimeLimit);
-        maxSpawnTime = Mathf.Max(maxSpawnTime, minSpawnTime + 0.5f);
-
-        Debug.Log("¡Dificultad aumentada! Nuevo tiempo de spawn: " + minSpawnTime + " - " + maxSpawnTime);
-    }
-
-    // Método público para forzar el spawn de un asteroide (útil para debugging)
-    public void ForceSpawnAsteroid()
-    {
-        SpawnAsteroid();
+        maxSpawnTime = Mathf.Max(maxSpawnTime, minSpawnTime + 0.5f); Debug.Log("¡Dificultad aumentada! Nuevo tiempo de spawn: " + minSpawnTime + " - " + maxSpawnTime);
     }
 }

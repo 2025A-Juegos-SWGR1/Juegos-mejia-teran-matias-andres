@@ -80,25 +80,28 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Asteroid"))
         {
-            try
-            {
-                // Usar GetInstance para asegurar que existe un GameManager
-                GameManager gameManager = GameManager.GetInstance();
-                gameManager.GameOver();
-                Debug.Log("GameOver llamado correctamente después de colisión con asteroide.");
+            HandleAsteroidCollision();
+        }
+    }
 
-                // Destruir la nave del jugador
-                Destroy(gameObject);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("Error al acceder al GameManager: " + e.Message);
-                // Alternativa temporal si no hay GameManager
-                Debug.Log("¡Colisión con asteroide! Game Over");
+    private void HandleAsteroidCollision()
+    {
+        try
+        {
+            // Obtener el GameManager
+            GameManager gameManager = GameManager.GetInstance();
+            gameManager.GameOver();
+            Debug.Log("Colisión con asteroide: Game Over");
 
-                // Destruir la nave del jugador incluso si hay un error
-                Destroy(gameObject);
-            }
+            // Destruir la nave del jugador
+            Destroy(gameObject);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error al procesar colisión con asteroide: " + e.Message);
+
+            // Asegurar que el jugador sea destruido incluso si hay error
+            Destroy(gameObject);
         }
     }
 }

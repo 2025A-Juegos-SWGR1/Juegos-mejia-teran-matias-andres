@@ -1,21 +1,31 @@
 using UnityEngine;
 
-// Este script debe añadirse a un objeto persistente en la escena inicial
+// Este script debe añadirse a un objeto en la escena inicial para garantizar la inicialización del juego
 public class InitializeGame : MonoBehaviour
 {
     void Awake()
     {
-        Debug.Log("InitializeGame: Awake iniciado - Intentando inicializar el juego...");
+        Debug.Log("InitializeGame: Inicializando el juego...");
 
-        // Intentar inicializar el GameManager
+        // Inicializar GameManager
+        InitializeGameManager();
+    }
+
+    void Start()
+    {
+        // Verificar componentes críticos
+        VerifyGameComponents();
+    }
+
+    // Método para inicializar el GameManager
+    private void InitializeGameManager()
+    {
         try
         {
             GameManager gameManager = GameManager.GetInstance();
             if (gameManager != null)
             {
                 Debug.Log("InitializeGame: GameManager inicializado correctamente");
-
-                // Reiniciar el juego para asegurar el estado inicial correcto
                 gameManager.ResetGame();
             }
             else
@@ -29,17 +39,16 @@ public class InitializeGame : MonoBehaviour
         }
     }
 
-    void Start()
+    // Método para verificar componentes críticos del juego
+    private void VerifyGameComponents()
     {
-        Debug.Log("InitializeGame: Start iniciado - Verificando componentes del juego...");
-
-        // Verificar que exista la cámara principal
+        // Verificar cámara principal
         if (Camera.main == null)
         {
             Debug.LogError("InitializeGame: No se encontró la cámara principal (Main Camera)");
         }
 
-        // Verificar que exista un objeto jugador
+        // Verificar jugador
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null)
         {
@@ -47,7 +56,7 @@ public class InitializeGame : MonoBehaviour
         }
         else
         {
-            Debug.Log("InitializeGame: Se encontró al jugador en la posición " + player.transform.position);
+            Debug.Log("InitializeGame: Jugador encontrado en posición " + player.transform.position);
         }
     }
 }

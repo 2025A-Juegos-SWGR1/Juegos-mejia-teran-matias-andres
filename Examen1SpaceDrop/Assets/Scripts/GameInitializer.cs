@@ -131,9 +131,6 @@ public class GameInitializer : MonoBehaviour
         // Paso 1: Configurar la cámara principal primero
         ConfigureMainCamera();
 
-        // Paso 2: Eliminar TODOS los fondos no deseados
-        RemoveUnwantedBackgrounds();
-
         // Verificar que tenemos un sprite válido
         if (customBackgroundSprite == null)
         {
@@ -155,13 +152,8 @@ public class GameInitializer : MonoBehaviour
 
         try
         {
-            // Buscar explícitamente por objeto CustomBackground y eliminarlo si existe
-            GameObject existingCustomBg = GameObject.Find("CustomBackground");
-            if (existingCustomBg != null)
-            {
-                Debug.Log("GameInitializer: Eliminando fondo existente antes de crear uno nuevo");
-                Destroy(existingCustomBg);
-            }
+            // Eliminar fondos no deseados
+            RemoveUnwantedBackgrounds();
 
             // Verificar si existe un BackgroundSetup
             BackgroundSetup existingBackgroundSetup = FindAnyObjectByType<BackgroundSetup>();
@@ -186,28 +178,6 @@ public class GameInitializer : MonoBehaviour
 
                 // Forzar la actualización del fondo
                 existingBackgroundSetup.ForceBackgroundUpdate();
-            }
-
-            // Paso 3: Verificar que no queden fondos no deseados después de configurar el nuestro
-            RemoveUnwantedBackgrounds();
-
-            // Verificación adicional
-            GameObject checkBg = GameObject.Find("CustomBackground");
-            if (checkBg == null)
-            {
-                Debug.LogWarning("GameInitializer: Después de la configuración, no se encuentra el objeto CustomBackground");
-            }
-            else
-            {
-                SpriteRenderer sr = checkBg.GetComponent<SpriteRenderer>();
-                if (sr == null || sr.sprite == null)
-                {
-                    Debug.LogWarning("GameInitializer: El objeto CustomBackground no tiene un SpriteRenderer válido");
-                }
-                else
-                {
-                    Debug.Log("GameInitializer: Fondo configurado correctamente con sprite: " + sr.sprite.name);
-                }
             }
         }
         catch (System.Exception e)
@@ -276,101 +246,36 @@ public class GameInitializer : MonoBehaviour
         {
             Debug.LogError("GameInitializer: Error al configurar la cámara: " + e.Message);
         }
-    }
-
-    // Método para buscar y eliminar fondos verdes u otros fondos no deseados
+    }    // Método para buscar y eliminar fondos no deseados
     private void RemoveUnwantedBackgrounds()
     {
         Debug.Log("GameInitializer: Buscando y eliminando fondos no deseados...");
         try
         {
-            // Buscar específicamente objetos SpawnerMarker y eliminarlos
-            GameObject[] spawnerMarkers = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None)
-                .Where(obj => obj.name == "SpawnerMarker").ToArray();
+            // Verificar la presencia de objetos específicos de fondo no deseados por nombre
+            string[] unwantedNames = new string[] { "Background", "backdrop", "_bg", "Plane", "GreenBackground" };
 
-            foreach (GameObject marker in spawnerMarkers)
+            foreach (string name in unwantedNames)
             {
-                Debug.Log("GameInitializer: Encontrado y eliminando SpawnerMarker: " + marker.name);
-                Destroy(marker);
-            }
-
-            // Buscar todos los GameObjects en la escena que podrían ser fondos
-            GameObject[] allObjects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
-            int removedCount = 0;
-
-            foreach (GameObject obj in allObjects)
-            {
-                bool shouldRemove = false;                // 1. Verificar por nombre si podría ser un fondo no deseado
-                if ((obj.name.Contains("Background") ||
-                     obj.name.Contains("backdrop") ||
-                     obj.name.Contains("_bg") ||
-                     obj.name.Contains("Plane")) &&
-                    obj.name != "CustomBackground" &&
-                    obj.name != "BackgroundManager" &&
-                    obj.name != gameObject.name)
+                GameObject obj = GameObject.Find(name);
+                if (obj != null && obj != gameObject && obj.name != "CustomBackground" && obj.name != "BackgroundManager")
                 {
-                    Debug.Log("GameInitializer: Encontrado posible fondo por nombre: " + obj.name);
-                    shouldRemove = true;
-                }
-
-                // 2. Verificar si tiene un Camera con color de fondo (que no sea negro transparente)
-                Camera cam = obj.GetComponent<Camera>();
-                if (cam != null && cam != Camera.main)
-                {
-                    Color bgColor = cam.backgroundColor;
-                    if (bgColor.r > 0.1f || bgColor.g > 0.1f || bgColor.b > 0.1f || bgColor.a > 0)
-                    {
-                        Debug.Log("GameInitializer: Encontrada cámara con color de fondo: " + obj.name);
-                        cam.backgroundColor = new Color(0, 0, 0, 0); // Hacer el fondo transparente
-                        Debug.Log("GameInitializer: Ajustado color de fondo de cámara a transparente: " + obj.name);
-                    }
-                }
-
-                // 3. Verificar si tiene un SpriteRenderer con color verde o algún color sólido de fondo
-                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {                    // Si es verde (componente verde dominante)
-                    Color color = sr.color;
-                    if (color.g > color.r || color.g > color.b) // Menos restrictivo para detectar cualquier tinte verde
-                    {
-                        Debug.Log("GameInitializer: Encontrado fondo verde: " + obj.name + ", Color: " + color);
-                        shouldRemove = true;
-                    }
-                    // Si no tiene sprite asignado pero es visible
-                    else if (sr.sprite == null && sr.enabled)
-                    {
-                        Debug.Log("GameInitializer: Encontrado SpriteRenderer sin sprite asignado: " + obj.name);
-                        shouldRemove = true;
-                    }
-                    // Si tiene nombre genérico
-                    else if (obj.name.Contains("TestBackground") ||
-                             obj.name.Contains("DefaultBackground") ||
-                             obj.name.Contains("_background"))
-                    {
-                        Debug.Log("GameInitializer: Encontrado fondo con nombre genérico: " + obj.name);
-                        shouldRemove = true;
-                    }
-                }
-
-                // 4. Verificar si tiene un componente Renderer que no sea SpriteRenderer (como MeshRenderer)
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null && !(renderer is SpriteRenderer) &&
-                   (obj.name.Contains("Background") || obj.name.Contains("Plane")))
-                {
-                    Debug.Log("GameInitializer: Encontrado objeto con Renderer que podría ser un fondo: " + obj.name);
-                    shouldRemove = true;
-                }
-
-                // Si se debe eliminar, hacerlo
-                if (shouldRemove)
-                {
-                    Debug.Log("GameInitializer: Eliminando objeto de fondo no deseado: " + obj.name);
+                    Debug.Log("GameInitializer: Eliminando fondo no deseado: " + obj.name);
                     Destroy(obj);
-                    removedCount++;
                 }
             }
 
-            Debug.Log("GameInitializer: Eliminados " + removedCount + " objetos de fondo no deseados");
+            // Ajustar color de fondo de cámaras secundarias
+            Camera[] allCameras = GameObject.FindObjectsByType<Camera>(FindObjectsSortMode.None);
+            foreach (Camera cam in allCameras)
+            {
+                if (cam != Camera.main)
+                {
+                    cam.backgroundColor = Color.clear;
+                }
+            }
+
+            Debug.Log("GameInitializer: Búsqueda de fondos no deseados completada");
         }
         catch (System.Exception e)
         {

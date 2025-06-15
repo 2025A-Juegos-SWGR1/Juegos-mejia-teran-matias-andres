@@ -23,14 +23,11 @@ public class GameManager : MonoBehaviour
                 GameObject managerObject = new GameObject("GameManager");
                 Instance = managerObject.AddComponent<GameManager>();
 
-                // Añadir un AudioSource si es necesario
+                // Añadir un AudioSource para efectos de sonido
                 if (managerObject.GetComponent<AudioSource>() == null)
                 {
                     managerObject.AddComponent<AudioSource>();
                 }
-
-                // Intentar crear elementos básicos de UI si es posible
-                CreateBasicUI();
 
                 // Asegurarse de que no se destruya al cambiar de escena
                 DontDestroyOnLoad(managerObject);
@@ -40,29 +37,6 @@ public class GameManager : MonoBehaviour
         }
 
         return Instance;
-    }
-
-    // Método para crear elementos básicos de UI
-    private static void CreateBasicUI()
-    {
-        try
-        {            // Buscar si ya existe un Canvas en la escena
-            Canvas existingCanvas = FindAnyObjectByType<Canvas>();
-
-            if (existingCanvas != null)
-            {
-                Debug.Log("Se encontró un Canvas existente. No se creará UI automáticamente.");
-                return;
-            }
-
-            // En juegos simples puede ser útil crear un canvas básico,
-            // pero esto solo debe hacerse en entornos de desarrollo o prueba
-            Debug.Log("Creación de UI básica omitida - añade elementos de UI manualmente para mejor control");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogWarning("No se pudo crear UI básica: " + e.Message);
-        }
     }
 
     // Variables para controlar el estado del juego
@@ -195,18 +169,18 @@ public class GameManager : MonoBehaviour
             Invoke("RestartGame", 3f);
             Debug.Log("Juego se reiniciará en 3 segundos");
         }
-    }
-
-    // Método para reiniciar el juego
+    }    // Método para reiniciar el juego
     public void RestartGame()
     {
+        Debug.Log("GameManager: Reiniciando juego...");
+
         // Reinicia las variables del juego
-        isGameOver = false;
-        score = 0;
+        ResetGame();
 
         // Recarga la escena actual
-        Scene currentScene = SceneManager.GetActiveScene(); SceneManager.LoadScene(currentScene.name);
-    }    // Método para aumentar la puntuación
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }// Método para aumentar la puntuación
     public void AddScore(int points)
     {
         if (!isGameOver)
@@ -247,12 +221,10 @@ public class GameManager : MonoBehaviour
                 Debug.Log("GameManager: Puntuación actual: " + score);
             }
         }
-    }
-
-    // Método para reiniciar el juego
+    }    // Método para reiniciar las variables del juego
     public void ResetGame()
     {
-        Debug.Log("GameManager: Reiniciando juego...");
+        Debug.Log("GameManager: Reiniciando variables del juego...");
 
         try
         {
@@ -269,7 +241,7 @@ public class GameManager : MonoBehaviour
                 gameOverUI.SetActive(false);
             }
 
-            Debug.Log("GameManager: Juego reiniciado correctamente.");
+            Debug.Log("GameManager: Variables del juego reiniciadas correctamente.");
         }
         catch (System.Exception e)
         {

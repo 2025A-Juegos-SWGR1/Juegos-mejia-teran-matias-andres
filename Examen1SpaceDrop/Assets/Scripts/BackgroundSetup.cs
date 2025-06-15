@@ -208,43 +208,35 @@ public class BackgroundSetup : MonoBehaviour
         {
             Debug.LogError("BackgroundSetup: Error al forzar la actualización del fondo: " + e.Message);
         }
-    }// Método para buscar y eliminar fondos verdes u otros fondos no deseados
+    }    // Método para buscar y eliminar fondos no deseados
     private void RemoveUnwantedBackgrounds()
     {
         Debug.Log("BackgroundSetup: Buscando y eliminando fondos no deseados...");
 
         try
         {
-            // Buscar fondos existentes por nombre
+            // Buscar fondos existentes por nombre específico
             GameObject existingBackground = GameObject.Find("CustomBackground");
             if (existingBackground != null && existingBackground != gameObject)
             {
                 Debug.Log("BackgroundSetup: Encontrado fondo personalizado existente. Eliminando para crear uno nuevo.");
                 Destroy(existingBackground);
             }
-            
-            // Simplificación: solo buscar objetos con nombres específicos de fondo
-            GameObject[] potentialBackgrounds = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None)
-                .Where(obj => 
-                    (obj.name.Contains("Background") || obj.name.Contains("backdrop") || obj.name.Contains("_bg")) && 
-                    obj != gameObject && 
-                    obj.name != "CustomBackground" && 
-                    !obj.name.Contains("Manager") && 
-                    !obj.name.Contains("Camera") && 
-                    !obj.name.Contains("Player") && 
-                    !obj.name.Contains("Canvas") && 
-                    !obj.name.Contains("UI")
-                ).ToArray();
-            
-            int removedCount = 0;
-            foreach (GameObject bg in potentialBackgrounds)
+
+            // Verificar la presencia de objetos específicos de fondo no deseados por nombre
+            string[] unwantedNames = new string[] { "Background", "backdrop", "_bg", "BackgroundPlane", "GreenBackground" };
+
+            foreach (string name in unwantedNames)
             {
-                Debug.Log("BackgroundSetup: Eliminando fondo potencial: " + bg.name);
-                Destroy(bg);
-                removedCount++;
+                GameObject obj = GameObject.Find(name);
+                if (obj != null && obj != gameObject && obj.name != "CustomBackground")
+                {
+                    Debug.Log("BackgroundSetup: Eliminando fondo no deseado: " + obj.name);
+                    Destroy(obj);
+                }
             }
-            
-            Debug.Log("BackgroundSetup: Eliminados " + removedCount + " objetos de fondo no deseados");
+
+            Debug.Log("BackgroundSetup: Búsqueda de fondos no deseados completada");
         }
         catch (System.Exception e)
         {
