@@ -48,35 +48,18 @@ public class AsteroidController : MonoBehaviour
         // Asignar una rotación aleatoria
         float randomRotation = Random.Range(0f, 360f);
         transform.rotation = Quaternion.Euler(0f, 0f, randomRotation);        // Si ya se ha establecido una dirección mediante SetDirection, usarla
-        // De lo contrario, usar la dirección por defecto (hacia abajo)
-        rb.linearVelocity = direction * speed;
+        // De lo contrario, usar la dirección por defecto (hacia abajo)        rb.linearVelocity = direction * speed;
         isInitialized = true;
-
-        if (showDebugInfo)
-        {
-            Debug.Log($"Asteroide inicializado en posición {transform.position} con dirección {direction} y velocidad {speed}");
-        }
-    }
-
-    void Update()
+    }    void Update()
     {
         // Rotar el asteroide continuamente
-        transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);        // Verificar que el asteroide sea visible
-        if (showDebugInfo && Time.frameCount % 60 == 0) // Solo cada 60 frames para no spamear la consola
-        {
-            Debug.Log($"Asteroide en posición {transform.position} con velocidad {rb.linearVelocity}");
-        }
+        transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
 
         // Destruir el asteroide si sale de la pantalla
         if (transform.position.y < -6f ||
-            transform.position.y > 6f ||
-            transform.position.x < -10f ||
+            transform.position.y > 6f ||            transform.position.x < -10f ||
             transform.position.x > 10f)
         {
-            if (showDebugInfo)
-            {
-                Debug.Log($"Asteroide destruido por salir de la pantalla: {transform.position}");
-            }
             Destroy(gameObject);
         }
     }
@@ -128,25 +111,11 @@ public class AsteroidController : MonoBehaviour
         }
 
         // Destruir el disparo
-        Destroy(bullet);
-
-        // Destruir el asteroide
+        Destroy(bullet);        // Destruir el asteroide
         Destroy(gameObject);
-
-        if (showDebugInfo)
-        {
-            Debug.Log("Asteroide destruido por disparo del jugador");
-        }
-    }
-
-    // Método para manejar la colisión con el jugador
+    }    // Método para manejar la colisión con el jugador
     private void HandlePlayerCollision(GameObject player)
     {
-        if (showDebugInfo)
-        {
-            Debug.Log("Asteroide colisionó con el jugador");
-        }
-
         // Instanciar explosión para el jugador si existe el prefab
         if (explosionPrefab != null)
         {
@@ -164,14 +133,9 @@ public class AsteroidController : MonoBehaviour
     }// Método para establecer una dirección personalizada
     public void SetDirection(Vector2 newDirection)
     {
-        direction = newDirection.normalized;        // Si ya está inicializado, actualizar la velocidad inmediatamente
-        if (isInitialized && rb != null)
+        direction = newDirection.normalized;        // Si ya está inicializado, actualizar la velocidad inmediatamente        if (isInitialized && rb != null)
         {
             rb.linearVelocity = direction * speed;
-            if (showDebugInfo)
-            {
-                Debug.Log($"Dirección del asteroide actualizada a {direction} con velocidad {rb.linearVelocity}");
-            }
         }
         // Si no, la dirección se aplicará en el método Start
     }

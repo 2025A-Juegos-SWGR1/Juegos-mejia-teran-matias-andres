@@ -10,12 +10,9 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             // Buscar si existe un GameManager en la escena
-            GameManager existingManager = FindAnyObjectByType<GameManager>();
-
-            if (existingManager != null)
+            GameManager existingManager = FindAnyObjectByType<GameManager>();            if (existingManager != null)
             {
                 Instance = existingManager;
-                Debug.Log("GameManager: GameManager encontrado en la escena.");
             }
             else
             {
@@ -27,12 +24,8 @@ public class GameManager : MonoBehaviour
                 if (managerObject.GetComponent<AudioSource>() == null)
                 {
                     managerObject.AddComponent<AudioSource>();
-                }
-
-                // Asegurarse de que no se destruya al cambiar de escena
+                }                // Asegurarse de que no se destruya al cambiar de escena
                 DontDestroyOnLoad(managerObject);
-
-                Debug.Log("GameManager: GameManager creado automáticamente porque no existía en la escena.");
             }
         }
 
@@ -48,13 +41,12 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverUI; // Panel de Game Over
 
     [Header("Audio")]
-    public AudioClip gameOverSound;
-    public AudioClip scoreSound; private AudioSource audioSource;
+    public AudioClip gameOverSound;    public AudioClip scoreSound;
+    
+    private AudioSource audioSource;
 
     void Awake()
     {
-        Debug.Log("GameManager: Awake iniciado");
-
         try
         {
             // Singleton setup
@@ -62,11 +54,9 @@ public class GameManager : MonoBehaviour
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                Debug.Log("GameManager: Inicializado en Awake como singleton.");
             }
             else if (Instance != this)
             {
-                Debug.Log("GameManager: Se destruyó una instancia duplicada de GameManager.");
                 Destroy(gameObject);
                 return;
             }
@@ -76,7 +66,6 @@ public class GameManager : MonoBehaviour
             if (audioSource == null)
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
-                Debug.Log("GameManager: AudioSource añadido al GameManager.");
             }
 
             // Reiniciar el juego para asegurar que todas las variables estén en su estado inicial
@@ -92,15 +81,9 @@ public class GameManager : MonoBehaviour
     private bool audioWarningShown = false;
 
     void Start()
-    {
-        // Inicializar el juego
+    {        // Inicializar el juego
         isGameOver = false;
         score = 0;
-
-        // Si no hay UI configurada, dar tiempo para que UISetup se ejecute
-        StartCoroutine(DelayedUIUpdate());
-
-        Debug.Log("GameManager: juego inicializado. Puntuación: " + score);
     }
 
     // Corrutina para dar tiempo a que la UI se configure
@@ -130,30 +113,15 @@ public class GameManager : MonoBehaviour
 
     // Método para terminar el juego
     public void GameOver()
-    {
-        if (!isGameOver)
+    {        if (!isGameOver)
         {
-            isGameOver = true;
-            Debug.Log("¡Juego terminado! Puntuación final: " + score);            // Reproducir sonido de Game Over
-            if (audioSource != null && gameOverSound != null)
+            isGameOver = true;            if (audioSource != null && gameOverSound != null)
             {
                 audioSource.PlayOneShot(gameOverSound);
-            }
-            else
-            {
-                // Solo mostrar el warning una vez
-                if (!audioWarningShown)
-                {
-                    Debug.LogWarning("No se pudo reproducir sonido de GameOver (audioSource o clip no disponible)");
-                    audioWarningShown = true;
-                }
-            }
-
-            // Mostrar panel de Game Over
+            }            // Mostrar panel de Game Over
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(true);
-                Debug.Log("Panel de Game Over activado");
             }
             else
             {
@@ -163,17 +131,12 @@ public class GameManager : MonoBehaviour
                     Debug.LogWarning("No hay panel de GameOver asignado - la funcionalidad será limitada");
                     gameOverWarningShown = true;
                 }
-            }
-
-            // Reiniciar el juego después de un tiempo
+            }            // Reiniciar el juego después de un tiempo
             Invoke("RestartGame", 3f);
-            Debug.Log("Juego se reiniciará en 3 segundos");
         }
     }    // Método para reiniciar el juego
     public void RestartGame()
     {
-        Debug.Log("GameManager: Reiniciando juego...");
-
         // Reinicia las variables del juego
         ResetGame();
 
@@ -182,11 +145,9 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(currentScene.name);
     }// Método para aumentar la puntuación
     public void AddScore(int points)
-    {
-        if (!isGameOver)
+    {        if (!isGameOver)
         {
             score += points;
-            Debug.Log("GameManager: Puntuación: " + score);
 
             // Actualizar UI
             UpdateScoreUI();
@@ -224,8 +185,6 @@ public class GameManager : MonoBehaviour
     }    // Método para reiniciar las variables del juego
     public void ResetGame()
     {
-        Debug.Log("GameManager: Reiniciando variables del juego...");
-
         try
         {
             // Reiniciar variables
@@ -235,13 +194,10 @@ public class GameManager : MonoBehaviour
             // Actualizar UI
             UpdateScoreUI();
 
-            // Ocultar panel de Game Over si existe
-            if (gameOverUI != null)
+            // Ocultar panel de Game Over si existe            if (gameOverUI != null)
             {
                 gameOverUI.SetActive(false);
             }
-
-            Debug.Log("GameManager: Variables del juego reiniciadas correctamente.");
         }
         catch (System.Exception e)
         {

@@ -17,10 +17,8 @@ public class AsteroidSpawner : MonoBehaviour
     public float difficultyIncreaseTime = 30f;  // Cada cuánto aumenta la dificultad (segundos)
 
     private float nextSpawnTime;
-    private int asteroidsInScene = 0; void Start()
+    private int asteroidsInScene = 0;    void Start()
     {
-        Debug.Log("AsteroidSpawner iniciando...");
-
         // Validar que haya al menos un prefab asignado
         if (asteroidPrefabs == null || asteroidPrefabs.Length == 0)
         {
@@ -40,15 +38,9 @@ public class AsteroidSpawner : MonoBehaviour
         }
         // Asegurarse de que este objeto no se destruya fácilmente
         Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;
-
-        // Iniciar el spawner inmediatamente para el primer asteroide
-        Debug.Log("Intentando crear el primer asteroide...");
+        rb.bodyType = RigidbodyType2D.Kinematic;        // Iniciar el spawner inmediatamente para el primer asteroide
         SpawnAsteroid();        // Iniciar el aumento de dificultad
         InvokeRepeating("IncreaseDifficulty", difficultyIncreaseTime, difficultyIncreaseTime);
-
-        // Mostrar mensaje de confirmación
-        Debug.Log("Spawner de asteroides iniciado. Generando asteroides cada " + minSpawnTime + "-" + maxSpawnTime + " segundos.");
     }
 
     void Update()
@@ -61,14 +53,9 @@ public class AsteroidSpawner : MonoBehaviour
         // Verificar si es momento de generar un nuevo asteroide
         if (Time.time >= nextSpawnTime && asteroidsInScene < maxAsteroids)
         {
-            SpawnAsteroid();
-
-            // Calcular el próximo tiempo de spawn
+            SpawnAsteroid();            // Calcular el próximo tiempo de spawn
             float spawnDelay = Random.Range(minSpawnTime, maxSpawnTime);
             nextSpawnTime = Time.time + spawnDelay;
-
-            // Log para depuración
-            Debug.Log($"Próximo asteroide en {spawnDelay} segundos. Asteroides actuales: {asteroidsInScene}/{maxAsteroids}");
         }
     }
     void SpawnAsteroid()
@@ -102,21 +89,18 @@ public class AsteroidSpawner : MonoBehaviour
         {
             Debug.LogError("No se pudo instanciar el asteroide.");
             return;
-        }
+        }        asteroidsInScene++;
 
-        asteroidsInScene++;
-        Debug.Log($"Asteroide '{asteroid.name}' creado en posición {spawnPosition}. Total: {asteroidsInScene}");        // Configurar dirección hacia abajo con ligera variación aleatoria
+        // Configurar dirección hacia abajo con ligera variación aleatoria
         AsteroidController controller = asteroid.GetComponent<AsteroidController>();
         if (controller != null)
-        {
-            // Calcular dirección hacia abajo con ligera variación horizontal
+        {            // Calcular dirección hacia abajo con ligera variación horizontal
             Vector2 direction = new Vector2(
                 Random.Range(-0.3f, 0.3f), // Pequeña variación horizontal
                 -1f                         // Siempre hacia abajo
             ).normalized;
 
             controller.SetDirection(direction);
-            Debug.Log($"Asteroide configurado con dirección hacia abajo: {direction}");
         }
         else
         {
@@ -127,11 +111,9 @@ public class AsteroidSpawner : MonoBehaviour
         {
             Debug.LogError($"El asteroide {asteroid.name} no tiene un SpriteRenderer con un sprite asignado.");
             // Solamente registramos el error, pero no creamos marcadores visuales para evitar fondos no deseados
-        }
-        else
+        }        else
         {
             // El asteroide ya tiene un SpriteRenderer con un sprite asignado
-            Debug.Log($"Asteroide {asteroid.name} creado correctamente con su sprite original.");
         }
 
         // Destruir el asteroide después de un tiempo máximo por seguridad
@@ -146,25 +128,18 @@ public class AsteroidSpawner : MonoBehaviour
         Vector2 position = Vector2.zero;
 
         // Si estamos forzando el spawn cercano para debugging, usar una distancia menor
-        float actualDistance = forceCloseSpawn ? 5f : spawnDistance;
-
-        // Posición en la parte superior con posición X aleatoria
+        float actualDistance = forceCloseSpawn ? 5f : spawnDistance;        // Posición en la parte superior con posición X aleatoria
         position = new Vector2(Random.Range(-5f, 5f), actualDistance);
-
-        // Log para depuración
-        Debug.Log($"Posición de spawn calculada: {position} (solo desde arriba)");
 
         return position;
     }
 
     IEnumerator CountAsteroidDestruction(GameObject asteroid)
-    {
-        // Esperar hasta que el asteroide sea destruido
+    {        // Esperar hasta que el asteroide sea destruido
         yield return new WaitUntil(() => asteroid == null);
 
         // Decrementar el contador
         asteroidsInScene--;
-        Debug.Log($"Asteroide destruido. Quedan: {asteroidsInScene}");
     }
 
     void IncreaseDifficulty()
@@ -173,10 +148,8 @@ public class AsteroidSpawner : MonoBehaviour
 
         // Reducir el tiempo de spawn para aumentar la dificultad
         minSpawnTime *= difficultyMultiplier;
-        maxSpawnTime *= difficultyMultiplier;
-
-        // Asegurar que no baje del mínimo establecido
+        maxSpawnTime *= difficultyMultiplier;        // Asegurar que no baje del mínimo establecido
         minSpawnTime = Mathf.Max(minSpawnTime, minSpawnTimeLimit);
-        maxSpawnTime = Mathf.Max(maxSpawnTime, minSpawnTime + 0.5f); Debug.Log("¡Dificultad aumentada! Nuevo tiempo de spawn: " + minSpawnTime + " - " + maxSpawnTime);
+        maxSpawnTime = Mathf.Max(maxSpawnTime, minSpawnTime + 0.5f);
     }
 }

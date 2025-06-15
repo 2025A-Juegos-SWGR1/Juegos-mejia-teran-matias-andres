@@ -24,13 +24,10 @@ public class PlayerController : MonoBehaviour
         if (!CompareTag("Player"))
         {
             Debug.LogWarning("El objeto del jugador no tiene el tag 'Player'. Esto puede causar problemas con las colisiones.");
-        }
-
-        // Asegurarse de que existe un GameManager en la escena
+        }        // Asegurarse de que existe un GameManager en la escena
         try
         {
             GameManager gameManager = GameManager.GetInstance();
-            Debug.Log("GameManager inicializado correctamente al inicio del juego.");
         }
         catch (System.Exception e)
         {
@@ -87,11 +84,9 @@ public class PlayerController : MonoBehaviour
     private void HandleAsteroidCollision()
     {
         try
-        {
-            // Obtener el GameManager
+        {            // Obtener el GameManager
             GameManager gameManager = GameManager.GetInstance();
             gameManager.GameOver();
-            Debug.Log("Colisión con asteroide: Game Over");
 
             // Destruir la nave del jugador
             Destroy(gameObject);
