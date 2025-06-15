@@ -32,6 +32,7 @@
    - Como alternativa, puedes añadir el script UISetup a un objeto en la escena para crear automáticamente la UI básica
 
 5. **Configura el generador de asteroides**:
+
    - Crea un objeto vacío y renómbralo a "AsteroidSpawner"
    - Añade el script AsteroidSpawner al objeto
    - Crea prefabs de asteroides con:
@@ -42,13 +43,64 @@
      - **Importante**: Asigna el tag "Asteroid" a cada prefab
    - Arrastra los prefabs de asteroides al campo "Asteroid Prefabs" del AsteroidSpawner
 
+6. **Configura el sistema de disparos** (NUEVO):
+
+   - Crea un prefab de bala con:
+     - SpriteRenderer (sprite pequeño para la bala)
+     - Rigidbody2D (sin gravedad)
+     - Collider2D marcado como "Is Trigger"
+     - Script BulletController
+     - **Importante**: Asigna el tag "PlayerBullet" al prefab
+   - Arrastra el prefab de bala al campo "Bullet Prefab" del PlayerController
+   - Ajusta la velocidad de disparo ("Fire Rate") y otros parámetros según tu preferencia
+
+7. **Configura el sistema de cristales** (NUEVO):
+   - Crea un objeto vacío y renómbralo a "CrystalSpawner"
+   - Añade el script CrystalSpawner al objeto
+   - Crea prefabs de cristales con:
+     - SpriteRenderer (sprite de cristal)
+     - Rigidbody2D (sin gravedad)
+     - Collider2D marcado como "Is Trigger"
+     - Script CrystalController
+     - **Importante**: Asigna el tag "Crystal" a cada prefab
+   - Arrastra los prefabs de cristales al campo "Crystal Prefabs" del CrystalSpawner
+   - Ajusta las probabilidades de cada tipo de cristal en el Inspector
+
 ## Configuración de Tags
 
 Asegúrate de tener configurados los siguientes tags en tu proyecto (Edit > Project Settings > Tags and Layers):
 
 - "Player" - Para la nave del jugador
 - "Asteroid" - Para todos los asteroides
-- "PlayerBullet" - Si implementas disparos desde la nave
+- "PlayerBullet" - Para las balas del jugador
+- "Crystal" - Para todos los cristales
+
+## Sistema de Tipos de Cristales
+
+El juego incluye 4 tipos diferentes de cristales, cada uno con su propio valor de puntos y probabilidad de aparición:
+
+### Tipos Disponibles:
+
+- **Cristal Amarillo**: 50 puntos (50% probabilidad por defecto)
+- **Cristal Azul**: 75 puntos (30% probabilidad por defecto)
+- **Cristal Rojo**: 100 puntos (15% probabilidad por defecto)
+- **Cristal Verde**: 150 puntos (5% probabilidad por defecto)
+
+### Personalización:
+
+- Las probabilidades se pueden ajustar en el Inspector del CrystalSpawner
+- Los colores se aplican automáticamente a los cristales
+- Los valores de puntos se asignan automáticamente según el tipo
+
+Para más detalles, consulta el archivo `CRYSTAL_TYPES_SETUP.md`.
+
+## Sistema de Estadísticas (Opcional)
+
+Puedes agregar el script `CrystalStatsUI` para rastrear estadísticas de cristales:
+
+- Cuenta cuántos cristales de cada tipo han sido destruidos
+- Rastrea los puntos totales obtenidos por cristales
+- Proporciona UI opcional para mostrar estas estadísticas
 
 ## Solución de Problemas Comunes
 
@@ -69,16 +121,98 @@ Asegúrate de tener configurados los siguientes tags en tu proyecto (Edit > Proj
    - Verifica que el AsteroidSpawner tenga los prefabs asignados
 
 4. **No se detectan colisiones**:
+
    - Asegúrate de que los objetos tienen Collider2D
    - Verifica que los Collider2D estén marcados como "Is Trigger"
-   - Confirma que los tags ("Player", "Asteroid") están correctamente asignados
+   - Confirma que los tags ("Player", "Asteroid", "PlayerBullet", "Crystal") están correctamente asignados
+
+5. **Los disparos no funcionan**:
+
+   - Verifica que el prefab de bala tenga el tag "PlayerBullet"
+   - Asegúrate de que el BulletController esté asignado al prefab
+   - Confirma que el "Bullet Prefab" esté asignado en el PlayerController
+
+6. **Los cristales no aparecen con colores diferentes**:
+   - Los colores se aplican automáticamente por código
+   - Si quieres sprites diferentes para cada tipo, puedes usar prefabs diferentes
+   - Verifica que el CrystalController esté correctamente asignado
+
+## Características del Juego
+
+### Mecánicas Principales:
+
+- **Movimiento**: Usa las flechas o WASD para mover la nave
+- **Disparos**: Presiona ESPACIO para disparar balas
+- **Colisiones**: Los asteroides destruyen la nave al tocarla
+- **Puntuación**: Destruye asteroides y cristales para obtener puntos
+- **Cristales**: Diferentes tipos de cristales dan diferentes puntos
+
+### Sistemas Implementados:
+
+- ✅ Gestión limpia de fondos (solo sprite personalizado)
+- ✅ Sistema de disparos con balas
+- ✅ Spawning inteligente de asteroides y cristales
+- ✅ Múltiples tipos de cristales con diferentes valores
+- ✅ Sistema de puntuación
+- ✅ Detección de colisiones
+- ✅ UI básica con puntuación y game over
+- ✅ Sistema de estadísticas opcional
 
 ## Extensiones Sugeridas
 
 Una vez que el juego básico funcione, puedes expandirlo con:
 
-1. Disparos desde la nave
-2. Diferentes tipos de asteroides
-3. Power-ups
-4. Efectos visuales y sonoros
-5. Menú principal y sistema de puntuación persistente
+1. **Efectos visuales**:
+
+   - Partículas al destruir asteroides/cristales
+   - Animaciones de explosión
+   - Trails para las balas
+
+2. **Audio**:
+
+   - Sonidos de disparo
+   - Sonidos de explosión
+   - Música de fondo
+
+3. **Power-ups adicionales**:
+
+   - Disparos múltiples
+   - Escudo temporal
+   - Disparos más rápidos
+
+4. **Mejoras de gameplay**:
+
+   - Vidas múltiples
+   - Niveles con diferentes dificultades
+   - Jefe final
+
+5. **UI avanzada**:
+   - Menú principal
+   - Tabla de puntuaciones
+   - Opciones de configuración
+
+## Archivos Principales del Proyecto
+
+### Scripts Principales:
+
+- `GameManager.cs` - Gestión general del juego
+- `PlayerController.cs` - Controles y movimiento del jugador
+- `AsteroidSpawner.cs` / `AsteroidController.cs` - Sistema de asteroides
+- `CrystalSpawner.cs` / `CrystalController.cs` - Sistema de cristales
+- `BulletController.cs` - Sistema de disparos
+- `BackgroundSetup.cs` - Gestión del fondo del juego
+
+### Scripts de Configuración:
+
+- `InitializeGame.cs` - Inicialización automática
+- `UISetup.cs` - Configuración automática de UI
+- `GameInitializer.cs` - Inicialización general del juego
+
+### Scripts Opcionales:
+
+- `CrystalStatsUI.cs` - Sistema de estadísticas de cristales
+
+### Archivos de Documentación:
+
+- `README.md` - Este archivo
+- `CRYSTAL_TYPES_SETUP.md` - Guía detallada del sistema de cristales

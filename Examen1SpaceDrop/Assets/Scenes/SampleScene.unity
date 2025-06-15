@@ -155,6 +155,14 @@ MonoBehaviour:
   spawnDistance: 8
   maxCrystals: 5
   forceCloseSpawn: 1
+  yellowCrystalChance: 50
+  blueCrystalChance: 30
+  redCrystalChance: 15
+  greenCrystalChance: 5
+  yellowCrystalSprite: {fileID: -1197133634939409620, guid: 44dc13eb17f713543b995c79216bd231, type: 3}
+  blueCrystalSprite: {fileID: -8506986430301296346, guid: 307b6a7106124d745bc78161e8f47d71, type: 3}
+  redCrystalSprite: {fileID: 377566231350024567, guid: f831eacef265d484782857dc42678ede, type: 3}
+  greenCrystalSprite: {fileID: 5124986211854862093, guid: 60018f073f0f5094f8259beb693cc98d, type: 3}
   difficultyMultiplier: 0.98
   minSpawnTimeLimit: 1.5
   difficultyIncreaseTime: 45
