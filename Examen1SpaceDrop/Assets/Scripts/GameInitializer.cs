@@ -144,24 +144,18 @@ public class GameInitializer : MonoBehaviour
             Debug.LogError("GameInitializer: El sprite de fondo no tiene textura. Verifica que sea un sprite válido.");
             return;
         }
-
         Debug.Log("GameInitializer: Sprite de fondo verificado: " +
             customBackgroundSprite.name + " (" +
             customBackgroundSprite.texture.width + "x" +
-            customBackgroundSprite.texture.height + ")");
-
-        try
+            customBackgroundSprite.texture.height + ")"); try
         {
-            // Eliminar fondos no deseados
-            RemoveUnwantedBackgrounds();
-
             // Verificar si existe un BackgroundSetup
-            BackgroundSetup existingBackgroundSetup = FindAnyObjectByType<BackgroundSetup>();
-            if (existingBackgroundSetup == null)
+            BackgroundSetup backgroundSetup = FindAnyObjectByType<BackgroundSetup>();
+            if (backgroundSetup == null)
             {
                 // Crear objeto para BackgroundSetup
                 GameObject backgroundSetupObj = new GameObject("BackgroundManager");
-                BackgroundSetup backgroundSetup = backgroundSetupObj.AddComponent<BackgroundSetup>();
+                backgroundSetup = backgroundSetupObj.AddComponent<BackgroundSetup>();
 
                 // Asignar el sprite personalizado
                 backgroundSetup.customBackgroundSprite = customBackgroundSprite;
@@ -173,11 +167,11 @@ public class GameInitializer : MonoBehaviour
             else
             {
                 // Si existe un BackgroundSetup, asignar el sprite personalizado
-                existingBackgroundSetup.customBackgroundSprite = customBackgroundSprite;
+                backgroundSetup.customBackgroundSprite = customBackgroundSprite;
                 Debug.Log("GameInitializer: Sprite de fondo personalizado asignado al BackgroundSetup existente: " + customBackgroundSprite.name);
 
                 // Forzar la actualización del fondo
-                existingBackgroundSetup.ForceBackgroundUpdate();
+                backgroundSetup.ForceBackgroundUpdate();
             }
         }
         catch (System.Exception e)
@@ -245,41 +239,6 @@ public class GameInitializer : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError("GameInitializer: Error al configurar la cámara: " + e.Message);
-        }
-    }    // Método para buscar y eliminar fondos no deseados
-    private void RemoveUnwantedBackgrounds()
-    {
-        Debug.Log("GameInitializer: Buscando y eliminando fondos no deseados...");
-        try
-        {
-            // Verificar la presencia de objetos específicos de fondo no deseados por nombre
-            string[] unwantedNames = new string[] { "Background", "backdrop", "_bg", "Plane", "GreenBackground" };
-
-            foreach (string name in unwantedNames)
-            {
-                GameObject obj = GameObject.Find(name);
-                if (obj != null && obj != gameObject && obj.name != "CustomBackground" && obj.name != "BackgroundManager")
-                {
-                    Debug.Log("GameInitializer: Eliminando fondo no deseado: " + obj.name);
-                    Destroy(obj);
-                }
-            }
-
-            // Ajustar color de fondo de cámaras secundarias
-            Camera[] allCameras = GameObject.FindObjectsByType<Camera>(FindObjectsSortMode.None);
-            foreach (Camera cam in allCameras)
-            {
-                if (cam != Camera.main)
-                {
-                    cam.backgroundColor = Color.clear;
-                }
-            }
-
-            Debug.Log("GameInitializer: Búsqueda de fondos no deseados completada");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("GameInitializer: Error al buscar fondos no deseados: " + e.Message);
         }
     }
 }

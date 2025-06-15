@@ -13,14 +13,10 @@ public class BackgroundSetup : MonoBehaviour
         Debug.Log("BackgroundSetup: Awake iniciado");        // Singleton setup
         if (Instance == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Instance = this; DontDestroyOnLoad(gameObject);
             Debug.Log("BackgroundSetup: Instancia singleton creada");
 
-            // Eliminar fondos no deseados antes de crear el nuestro - hacer esto de forma más agresiva
-            RemoveUnwantedBackgrounds();
-
-            // Esperar un frame antes de crear nuestro fondo para asegurar que los objetos marcados para destrucción hayan sido eliminados
+            // Esperar un frame antes de crear nuestro fondo
             StartCoroutine(SetupBackgroundNextFrame());
         }
         else if (Instance != this)
@@ -30,13 +26,9 @@ public class BackgroundSetup : MonoBehaviour
             return;
         }
     }
-
     private System.Collections.IEnumerator SetupBackgroundNextFrame()
     {
         yield return null; // Esperar un frame
-
-        // Eliminar fondos no deseados otra vez por si acaso
-        RemoveUnwantedBackgrounds();
 
         // Crear el fondo personalizado
         SetupCustomBackground();
@@ -175,23 +167,21 @@ public class BackgroundSetup : MonoBehaviour
                 ", Z Position: " + backgroundObj.transform.position.z);
 
             // Forzar un repintado/actualización del SpriteRenderer
-            renderer.enabled = false;
-            renderer.enabled = true;
+            renderer.enabled = false; renderer.enabled = true;
         }
         catch (System.Exception e)
         {
             Debug.LogError("BackgroundSetup: Error al configurar el fondo personalizado: " + e.Message);
         }
-    }    // Método para forzar la actualización y visibilidad del fondo
+    }
+
+    // Método para forzar la actualización y visibilidad del fondo
     public void ForceBackgroundUpdate()
     {
         Debug.Log("BackgroundSetup: Forzando actualización del fondo...");
 
         try
         {
-            // Eliminar fondos no deseados primero
-            RemoveUnwantedBackgrounds();
-
             // Asegurarse de que existe la cámara principal antes de continuar
             if (Camera.main == null)
             {
@@ -207,40 +197,6 @@ public class BackgroundSetup : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError("BackgroundSetup: Error al forzar la actualización del fondo: " + e.Message);
-        }
-    }    // Método para buscar y eliminar fondos no deseados
-    private void RemoveUnwantedBackgrounds()
-    {
-        Debug.Log("BackgroundSetup: Buscando y eliminando fondos no deseados...");
-
-        try
-        {
-            // Buscar fondos existentes por nombre específico
-            GameObject existingBackground = GameObject.Find("CustomBackground");
-            if (existingBackground != null && existingBackground != gameObject)
-            {
-                Debug.Log("BackgroundSetup: Encontrado fondo personalizado existente. Eliminando para crear uno nuevo.");
-                Destroy(existingBackground);
-            }
-
-            // Verificar la presencia de objetos específicos de fondo no deseados por nombre
-            string[] unwantedNames = new string[] { "Background", "backdrop", "_bg", "BackgroundPlane", "GreenBackground" };
-
-            foreach (string name in unwantedNames)
-            {
-                GameObject obj = GameObject.Find(name);
-                if (obj != null && obj != gameObject && obj.name != "CustomBackground")
-                {
-                    Debug.Log("BackgroundSetup: Eliminando fondo no deseado: " + obj.name);
-                    Destroy(obj);
-                }
-            }
-
-            Debug.Log("BackgroundSetup: Búsqueda de fondos no deseados completada");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("BackgroundSetup: Error al buscar fondos no deseados: " + e.Message);
         }
     }
 }
