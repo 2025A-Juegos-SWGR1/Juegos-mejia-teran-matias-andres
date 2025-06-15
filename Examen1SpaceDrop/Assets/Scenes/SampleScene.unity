@@ -119,6 +119,60 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &169318258
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 169318260}
+  - component: {fileID: 169318259}
+  m_Layer: 0
+  m_Name: CrystalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &169318259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169318258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8651ff64c636a3f469279e8c2a3b9dc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crystalPrefabs:
+  - {fileID: 4155370338900932864, guid: 4d31623833c72f14d9dcfad3f1c72486, type: 3}
+  minSpawnTime: 3
+  maxSpawnTime: 6
+  spawnDistance: 8
+  maxCrystals: 5
+  forceCloseSpawn: 1
+  difficultyMultiplier: 0.98
+  minSpawnTimeLimit: 1.5
+  difficultyIncreaseTime: 45
+--- !u!4 &169318260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169318258}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.7079, y: -0.25199, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &271277104
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +351,10 @@ MonoBehaviour:
   speed: 5
   limitX: 8.5
   limitY: 4.5
+  bulletPrefab: {fileID: 2600717903084485188, guid: 0cb6de91284954c448684a311c16e4fe, type: 3}
+  firePoint: {fileID: 0}
+  fireRate: 0.3
+  shootSound: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,3 +692,4 @@ SceneRoots:
   - {fileID: 271277108}
   - {fileID: 1499220217}
   - {fileID: 1950884555}
+  - {fileID: 169318260}

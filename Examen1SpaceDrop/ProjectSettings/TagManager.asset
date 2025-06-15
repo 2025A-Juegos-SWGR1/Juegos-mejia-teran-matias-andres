@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Package
   - Asteroid
+  - PlayerBullet
+  - Crystal
   layers:
   - Default
   - TransparentFX
