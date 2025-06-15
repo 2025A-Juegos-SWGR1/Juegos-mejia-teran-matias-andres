@@ -10,7 +10,7 @@ public class BulletController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        
+
         // Verificar Rigidbody2D
         if (rb == null)
         {

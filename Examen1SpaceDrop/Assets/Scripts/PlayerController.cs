@@ -6,17 +6,17 @@ public class PlayerController : MonoBehaviour
     public float speed = 5f;
     public float limitX = 8.5f; // Límite horizontal de la pantalla
     public float limitY = 4.5f; // Límite vertical de la pantalla
-    
+
     [Header("Disparos")]
     public GameObject bulletPrefab;         // Prefab de la bala
     public Transform firePoint;            // Punto desde donde salen las balas (opcional)
     public float fireRate = 0.3f;          // Tiempo entre disparos
     public AudioClip shootSound;           // Sonido del disparo (opcional)
-    
+
     private Rigidbody2D rb;
     private Vector2 movement;
     private float nextFireTime = 0f;
-    private AudioSource audioSource;    void Start()
+    private AudioSource audioSource; void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
             rb = gameObject.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f; // Sin gravedad para control manual
         }
-        
+
         // Añadir AudioSource si no existe
         if (audioSource == null)
         {
@@ -48,7 +48,8 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("Error al inicializar el GameManager: " + e.Message);
         }
-    }    void Update()
+    }
+    void Update()
     {
         // Capturar input de movimiento
         float moveHorizontal = Input.GetAxis("Horizontal"); // A y D, o flechas izquierda y derecha
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour
 
         // Crear vector de movimiento
         movement = new Vector2(moveHorizontal, moveVertical);
-        
+
         // Capturar input de disparo
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= nextFireTime)
         {
@@ -111,14 +112,15 @@ public class PlayerController : MonoBehaviour
             // Destruir la nave del jugador
             Destroy(gameObject);
         }
-        catch (System.Exception e)        {
+        catch (System.Exception e)
+        {
             Debug.LogError("Error al procesar colisión con asteroide: " + e.Message);
 
             // Asegurar que el jugador sea destruido incluso si hay error
             Destroy(gameObject);
         }
     }
-    
+
     void Shoot()
     {
         if (bulletPrefab == null)
@@ -141,7 +143,7 @@ public class PlayerController : MonoBehaviour
 
         // Crear la bala
         GameObject bullet = Instantiate(bulletPrefab, shootPosition, Quaternion.identity);
-        
+
         // Asignar el tag PlayerBullet si no lo tiene
         if (!bullet.CompareTag("PlayerBullet"))
         {

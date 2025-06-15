@@ -86,19 +86,19 @@ public class CrystalController : MonoBehaviour
     // Método para verificar si es un disparo del jugador
     private bool IsPlayerBullet(GameObject obj)
     {
-        return obj.CompareTag("PlayerBullet") || 
-               obj.name.Contains("Bullet") || 
+        return obj.CompareTag("PlayerBullet") ||
+               obj.name.Contains("Bullet") ||
                obj.name.Contains("bullet");
     }
-    
+
     // Método para verificar si es el jugador
     private bool IsPlayer(GameObject obj)
     {
-        return obj.CompareTag("Player") || 
-               obj.name.Contains("Player") || 
+        return obj.CompareTag("Player") ||
+               obj.name.Contains("Player") ||
                obj.name.Contains("player");
     }
-    
+
     // Método para manejar la colisión con un disparo
     private void HandleBulletCollision(GameObject bullet)
     {
@@ -120,7 +120,7 @@ public class CrystalController : MonoBehaviour
         // Destruir el cristal
         Destroy(gameObject);
     }
-    
+
     // Método para manejar la colisión con el jugador (opcional: poder-up)
     private void HandlePlayerCollision(GameObject player)
     {
