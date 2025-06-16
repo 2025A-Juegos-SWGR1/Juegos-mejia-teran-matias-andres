@@ -116,6 +116,53 @@ public class UISetup : MonoBehaviour
             }
         }
 
+        // Crear texto de vidas si no existe
+        if (gameManager.livesText == null)
+        {
+            Debug.Log("Creando texto de vidas...");
+            GameObject livesObj;
+
+            // Usar prefab si está disponible, sino crear uno genérico
+            if (scoreTextPrefab != null)
+            {
+                // Usar el prefab del score text como base
+                livesObj = Instantiate(scoreTextPrefab.gameObject, canvas.transform);
+            }
+            else
+            {
+                livesObj = new GameObject("LivesText");
+                livesObj.transform.SetParent(canvas.transform, false);
+                Text livesText = livesObj.AddComponent<Text>();
+
+                // Configurar el texto
+                livesText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                livesText.fontSize = 24;
+                livesText.color = Color.white;
+                livesText.alignment = TextAnchor.UpperRight;
+                livesText.text = "Vidas: 4";
+
+                // Configurar posición (esquina superior derecha)
+                RectTransform rt = livesText.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(1, 1);
+                rt.anchorMax = new Vector2(1, 1);
+                rt.anchoredPosition = new Vector2(-20, -20);
+                rt.sizeDelta = new Vector2(200, 30);
+                rt.pivot = new Vector2(1, 1);
+
+                // Asignar al GameManager
+                gameManager.livesText = livesText;
+
+                if (gameManager.livesText == null)
+                {
+                    Debug.LogError("No se pudo asignar el texto de vidas al GameManager.");
+                }
+                else
+                {
+                    Debug.Log("Texto de vidas creado y asignado al GameManager correctamente.");
+                }
+            }
+        }
+
         // Crear panel de Game Over si no existe
         if (gameManager.gameOverUI == null)
         {

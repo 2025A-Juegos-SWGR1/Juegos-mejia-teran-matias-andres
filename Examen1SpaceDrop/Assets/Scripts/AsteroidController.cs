@@ -167,7 +167,7 @@ public class AsteroidController : MonoBehaviour
 
         // Destruir el asteroide
         Destroy(gameObject);
-    }// Método para manejar la colisión con el jugador
+    }    // Método para manejar la colisión con el jugador
     private void HandlePlayerCollision(GameObject player)
     {
         // Instanciar explosión para el jugador si existe el prefab
@@ -176,15 +176,15 @@ public class AsteroidController : MonoBehaviour
             Instantiate(explosionPrefab, player.transform.position, Quaternion.identity);
         }
 
-        // Destruir la nave del jugador
-        Destroy(player);
-
-        // Notificar al GameManager si existe
+        // Notificar al GameManager que el jugador murió
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.GameOver();
+            GameManager.Instance.PlayerDied();
         }
-    }    // Método para establecer una dirección personalizada
+
+        // Destruir la nave del jugador
+        Destroy(player);
+    }// Método para establecer una dirección personalizada
     public void SetDirection(Vector2 newDirection)
     {
         direction = newDirection.normalized;

@@ -29,6 +29,74 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = 0f; // Sin gravedad para control manual
         }
 
+        // Registrar este jugador con el GameManager para el sistema de respawn
+        if (GameManager.Instance != null)
+        {
+            // Crear un "prefab" temporal del jugador para el respawn
+            GameObject playerPrefab = new GameObject("PlayerPrefab");
+            playerPrefab.AddComponent<PlayerController>();
+
+            // Copiar los valores de configuración
+            PlayerController prefabController = playerPrefab.GetComponent<PlayerController>();
+            prefabController.speed = this.speed;
+            prefabController.limitX = this.limitX;
+            prefabController.limitY = this.limitY;
+            prefabController.bulletPrefab = this.bulletPrefab;
+            prefabController.firePoint = this.firePoint;
+            prefabController.fireRate = this.fireRate;
+            prefabController.shootSound = this.shootSound;
+
+            // Copiar componentes necesarios
+            if (GetComponent<SpriteRenderer>() != null)
+            {
+                SpriteRenderer originalSR = GetComponent<SpriteRenderer>();
+                SpriteRenderer prefabSR = playerPrefab.AddComponent<SpriteRenderer>();
+                prefabSR.sprite = originalSR.sprite;
+                prefabSR.color = originalSR.color;
+                prefabSR.sortingLayerName = originalSR.sortingLayerName;
+                prefabSR.sortingOrder = originalSR.sortingOrder;
+            }
+
+            if (GetComponent<Collider2D>() != null)
+            {
+                Collider2D originalCollider = GetComponent<Collider2D>();
+                if (originalCollider is BoxCollider2D)
+                {
+                    BoxCollider2D prefabCollider = playerPrefab.AddComponent<BoxCollider2D>();
+                    BoxCollider2D originalBox = originalCollider as BoxCollider2D;
+                    prefabCollider.size = originalBox.size;
+                    prefabCollider.offset = originalBox.offset;
+                    prefabCollider.isTrigger = originalBox.isTrigger;
+                }
+                else if (originalCollider is CircleCollider2D)
+                {
+                    CircleCollider2D prefabCollider = playerPrefab.AddComponent<CircleCollider2D>();
+                    CircleCollider2D originalCircle = originalCollider as CircleCollider2D;
+                    prefabCollider.radius = originalCircle.radius;
+                    prefabCollider.offset = originalCircle.offset;
+                    prefabCollider.isTrigger = originalCircle.isTrigger;
+                }
+            }
+            Rigidbody2D prefabRb = playerPrefab.AddComponent<Rigidbody2D>();
+            prefabRb.gravityScale = 0f;
+
+            // Asegurar que el prefab tenga el tag correcto
+            try
+            {
+                playerPrefab.tag = "Player";
+            }
+            catch
+            {
+                Debug.LogWarning("No se pudo asignar el tag 'Player' al prefab");
+            }
+
+            // Desactivar el prefab y configurarlo en el GameManager
+            playerPrefab.SetActive(false);
+            GameManager.Instance.SetPlayerPrefab(playerPrefab, transform.position);
+
+            Debug.Log("PlayerController: Prefab creado y registrado en GameManager");
+        }
+
         // Añadir AudioSource si no existe
         if (audioSource == null)
         {
@@ -101,13 +169,15 @@ public class PlayerController : MonoBehaviour
             HandleAsteroidCollision();
         }
     }
-
     private void HandleAsteroidCollision()
     {
         try
-        {            // Obtener el GameManager
+        {
+            Debug.Log("PlayerController: Colisión con asteroide detectada");
+
+            // Obtener el GameManager y reducir una vida
             GameManager gameManager = GameManager.GetInstance();
-            gameManager.GameOver();
+            gameManager.PlayerDied();
 
             // Destruir la nave del jugador
             Destroy(gameObject);

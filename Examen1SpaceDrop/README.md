@@ -21,15 +21,17 @@
    - Añade el script GameManager al objeto
    - Como alternativa, puedes añadir el script InitializeGame a cualquier objeto en la escena, y el GameManager se creará automáticamente
 
-4. **Configura la UI (Interfaz de Usuario)**:
+4. **Configura la UI (Interfaz de Usuario)** (ACTUALIZADO):
 
    - Crea un Canvas (GameObject > UI > Canvas)
    - Añade un Text para la puntuación (GameObject > UI > Text)
-   - Ajusta el Text para que sea visible (esquina superior izquierda recomendada)
+   - **NUEVO**: Añade un Text para las vidas (GameObject > UI > Text)
+   - Ajusta los textos para que sean visibles (puntuación: esquina superior izquierda, vidas: esquina superior derecha)
    - Crea un panel de Game Over (puede estar desactivado inicialmente)
    - Arrastra el texto de puntuación al campo "Score Text" del GameManager
+   - **NUEVO**: Arrastra el texto de vidas al campo "Lives Text" del GameManager
    - Arrastra el panel de Game Over al campo "Game Over UI" del GameManager
-   - Como alternativa, puedes añadir el script UISetup a un objeto en la escena para crear automáticamente la UI básica
+   - Como alternativa, puedes añadir el script UISetup a un objeto en la escena para crear automáticamente toda la UI básica
 
 5. **Configura el generador de asteroides** (ACTUALIZADO):
 
@@ -102,6 +104,25 @@ El juego incluye 3 tipos diferentes de asteroides, cada uno con resistencia, tam
 
 Para más detalles, consulta el archivo `ASTEROID_SYSTEM_SETUP.md`.
 
+## Sistema de Vidas del Jugador
+
+El jugador ahora tiene múltiples vidas antes del Game Over final:
+
+### Mecánica de Vidas:
+
+- **Vidas Iniciales**: 4 vidas por defecto
+- **Pérdida de Vida**: Cada colisión con asteroide resta 1 vida
+- **Respawn**: Si quedan vidas, el jugador reaparece después de 2 segundos
+- **Game Over**: Solo cuando las vidas llegan a 0
+
+### Configuración:
+
+- Las vidas se pueden ajustar en el Inspector del GameManager
+- El tiempo de respawn es configurable
+- UI automática muestra las vidas restantes en la esquina superior derecha
+
+Para más detalles, consulta el archivo `LIVES_SYSTEM_SETUP.md`.
+
 ## Sistema de Tipos de Cristales
 
 El juego incluye 4 tipos diferentes de cristales, cada uno con su propio valor de puntos y probabilidad de aparición:
@@ -171,7 +192,9 @@ Puedes agregar el script `CrystalStatsUI` para rastrear estadísticas de cristal
 - **Movimiento**: Usa las flechas o WASD para mover la nave
 - **Disparos**: Presiona ESPACIO para disparar balas
 - **Asteroides Multi-Tamaño**: 3 tipos de asteroides con diferente resistencia (1-3 impactos)
-- **Colisiones**: Los asteroides destruyen la nave al tocarla
+- **Sistema de Vidas**: El jugador tiene 4 vidas antes del Game Over
+- **Respawn**: El jugador reaparece automáticamente tras morir si tiene vidas
+- **Colisiones**: Los asteroides destruyen la nave al tocarla (resta 1 vida)
 - **Sistema de Daño**: Los asteroides requieren múltiples impactos y muestran efectos visuales
 - **Puntuación**: Destruye asteroides y cristales para obtener puntos
 - **Cristales**: Diferentes tipos de cristales dan diferentes puntos
@@ -181,12 +204,13 @@ Puedes agregar el script `CrystalStatsUI` para rastrear estadísticas de cristal
 - ✅ Gestión limpia de fondos (solo sprite personalizado)
 - ✅ Sistema de disparos con balas
 - ✅ Asteroides multi-tamaño con sistema de resistencia/daño
+- ✅ Sistema de vidas del jugador con respawn automático
 - ✅ Spawning inteligente de asteroides y cristales
 - ✅ Múltiples tipos de cristales con diferentes valores
 - ✅ Sistema de puntuación
 - ✅ Detección de colisiones avanzada
 - ✅ Efectos visuales de daño (parpadeo rojo)
-- ✅ UI básica con puntuación y game over
+- ✅ UI completa (puntuación, vidas, game over)
 - ✅ Sistema de estadísticas opcional
 
 ## Extensiones Sugeridas

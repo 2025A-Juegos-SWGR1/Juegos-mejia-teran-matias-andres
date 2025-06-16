@@ -30,20 +30,29 @@ public class GameManager : MonoBehaviour
         }
 
         return Instance;
-    }
-
-    // Variables para controlar el estado del juego
+    }    // Variables para controlar el estado del juego
     public bool isGameOver = false;
     public int score = 0;
 
+    [Header("Sistema de Vidas")]
+    public int maxLives = 4;      // Número máximo de vidas
+    public int currentLives = 4;  // Vidas actuales
+    public float respawnDelay = 2f; // Tiempo antes de reaparecer
+
     [Header("UI Elements")]
     public Text scoreText;        // Texto para mostrar la puntuación
+    public Text livesText;        // Texto para mostrar las vidas
     public GameObject gameOverUI; // Panel de Game Over
 
     [Header("Audio")]
     public AudioClip gameOverSound; public AudioClip scoreSound;
 
     private AudioSource audioSource;
+
+    // Variables para el sistema de respawn del jugador
+    private GameObject playerPrefab;
+    private Vector3 playerSpawnPosition = Vector3.zero;
+    private bool isPlayerRespawning = false;
 
     void Awake()
     {
@@ -78,22 +87,24 @@ public class GameManager : MonoBehaviour
     }// Variables para control de mensajes
     private bool gameOverWarningShown = false;
     private bool scoreWarningShown = false;
-    private bool audioWarningShown = false;
-
-    void Start()
-    {        // Inicializar el juego
+    private bool audioWarningShown = false; void Start()
+    {
+        // Inicializar el juego
         isGameOver = false;
         score = 0;
+        currentLives = maxLives;
+
+        // Inicializar UI después de un breve delay
+        StartCoroutine(DelayedUIUpdate());
     }
 
     // Corrutina para dar tiempo a que la UI se configure
     System.Collections.IEnumerator DelayedUIUpdate()
     {
         // Esperar un pequeño tiempo para permitir que UISetup se ejecute primero
-        yield return new WaitForSeconds(0.1f);
-
-        // Actualizar la UI después de la espera
+        yield return new WaitForSeconds(0.1f);        // Actualizar la UI después de la espera
         UpdateScoreUI();
+        UpdateLivesUI();
 
         // Asegurarse de que el panel de Game Over esté oculto al inicio
         if (gameOverUI != null)
@@ -111,15 +122,93 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Método para terminar el juego
+    // Método para terminar el juego    // Método llamado cuando el jugador muere
+    public void PlayerDied()
+    {
+        if (isGameOver || isPlayerRespawning)
+        {
+            Debug.Log($"PlayerDied() ignorado - isGameOver: {isGameOver}, isPlayerRespawning: {isPlayerRespawning}");
+            return;
+        }
+
+        // Reducir vidas
+        currentLives--;
+        UpdateLivesUI();
+
+        Debug.Log($"Jugador murió. Vidas restantes: {currentLives}/{maxLives}");
+
+        if (currentLives <= 0)
+        {
+            // Sin vidas, game over
+            Debug.Log("Sin vidas restantes, iniciando Game Over");
+            GameOver();
+        }
+        else
+        {
+            // Aún hay vidas, reaparecer jugador
+            Debug.Log($"Iniciando respawn, quedan {currentLives} vidas");
+            Debug.Log($"Estado actual - isPlayerRespawning: {isPlayerRespawning}, playerPrefab null: {playerPrefab == null}");
+            StartCoroutine(RespawnPlayer());
+        }
+    }    // Método para reaparecer al jugador
+    private System.Collections.IEnumerator RespawnPlayer()
+    {
+        isPlayerRespawning = true;
+        Debug.Log($"Iniciando proceso de respawn, esperando {respawnDelay} segundos...");
+
+        // Esperar el tiempo de respawn
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Buscar al jugador existente
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            Debug.Log("Jugador encontrado pero debería haber sido destruido. Destruyendo...");
+            Destroy(player);
+        }
+
+        // Crear nuevo jugador
+        Debug.Log("Creando nuevo jugador...");
+        CreateNewPlayer();
+
+        isPlayerRespawning = false;
+        Debug.Log("Proceso de respawn completado");
+    }    // Método para crear un nuevo jugador
+    private void CreateNewPlayer()
+    {
+        Debug.Log($"CreateNewPlayer() llamado. playerPrefab null? {playerPrefab == null}");
+
+        if (playerPrefab != null)
+        {
+            Debug.Log($"Creando jugador en posición: {playerSpawnPosition}");
+
+            // Crear nuevo jugador en la posición de spawn
+            GameObject newPlayer = Instantiate(playerPrefab, playerSpawnPosition, Quaternion.identity);
+            newPlayer.name = "Player";
+            newPlayer.SetActive(true); // Asegurar que esté activo
+
+            Debug.Log($"Nuevo jugador creado: {newPlayer.name}");
+        }
+        else
+        {
+            Debug.LogError("ERROR: No hay prefab de jugador asignado para crear uno nuevo. Verificar que PlayerController esté configurando el prefab correctamente.");
+        }
+    }
+
     public void GameOver()
     {
         if (!isGameOver)
         {
-            isGameOver = true; if (audioSource != null && gameOverSound != null)
+            isGameOver = true;
+
+            Debug.Log("Game Over!");
+
+            if (audioSource != null && gameOverSound != null)
             {
                 audioSource.PlayOneShot(gameOverSound);
-            }            // Mostrar panel de Game Over
+            }
+
+            // Mostrar panel de Game Over
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(true);
@@ -132,10 +221,12 @@ public class GameManager : MonoBehaviour
                     Debug.LogWarning("No hay panel de GameOver asignado - la funcionalidad será limitada");
                     gameOverWarningShown = true;
                 }
-            }            // Reiniciar el juego después de un tiempo
+            }
+
+            // Reiniciar el juego después de un tiempo
             Invoke("RestartGame", 3f);
         }
-    }    // Método para reiniciar el juego
+    }// Método para reiniciar el juego
     public void RestartGame()
     {
         // Reinicia las variables del juego
@@ -191,12 +282,16 @@ public class GameManager : MonoBehaviour
         {
             // Reiniciar variables
             score = 0;
+            currentLives = maxLives;
             isGameOver = false;
+            isPlayerRespawning = false;
 
             // Actualizar UI
             UpdateScoreUI();
+            UpdateLivesUI();
 
-            // Ocultar panel de Game Over si existe            if (gameOverUI != null)
+            // Ocultar panel de Game Over si existe
+            if (gameOverUI != null)
             {
                 gameOverUI.SetActive(false);
             }
@@ -204,6 +299,49 @@ public class GameManager : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError("GameManager: Error al reiniciar el juego: " + e.Message);
+        }
+    }
+
+    // Método para actualizar la UI de vidas
+    private void UpdateLivesUI()
+    {
+        if (livesText != null)
+        {
+            livesText.text = "Vidas: " + currentLives;
+        }
+    }
+
+    // Métodos públicos para el sistema de vidas
+    public int GetCurrentLives()
+    {
+        return currentLives;
+    }
+
+    public int GetMaxLives()
+    {
+        return maxLives;
+    }
+
+    public bool IsPlayerRespawning()
+    {
+        return isPlayerRespawning;
+    }    // Método para configurar el prefab del jugador (llamado desde el jugador en Start)
+    public void SetPlayerPrefab(GameObject prefab, Vector3 spawnPos)
+    {
+        playerPrefab = prefab;
+        playerSpawnPosition = spawnPos;
+        Debug.Log($"SetPlayerPrefab() llamado. Prefab: {prefab?.name}, Posición: {spawnPos}");
+        Debug.Log($"playerPrefab configurado correctamente: {playerPrefab != null}");
+    }
+
+    // Método para agregar vidas (power-up futuro)
+    public void AddLife()
+    {
+        if (currentLives < maxLives)
+        {
+            currentLives++;
+            UpdateLivesUI();
+            Debug.Log($"Vida extra! Vidas actuales: {currentLives}");
         }
     }
 }
