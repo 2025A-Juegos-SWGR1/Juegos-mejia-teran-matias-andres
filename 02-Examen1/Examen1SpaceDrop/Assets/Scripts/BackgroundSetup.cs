@@ -64,16 +64,25 @@ public class BackgroundSetup : MonoBehaviour
             backgroundObj.transform.position = new Vector3(0, 0, 10);
 
             // Asignar layer al objeto para asegurar que se renderice correctamente
-            backgroundObj.layer = LayerMask.NameToLayer("Default");
-
-            // Intentar agregar el tag "Background" si es posible para facilitar la búsqueda
+            backgroundObj.layer = LayerMask.NameToLayer("Default");            // Intentar agregar el tag "Background" si es posible para facilitar la búsqueda
             try
             {
-                backgroundObj.tag = "Background";
+                // Verificar si el tag existe antes de asignarlo
+                if (IsTagDefined("Background"))
+                {
+                    backgroundObj.tag = "Background";
+                    Debug.Log("BackgroundSetup: Tag 'Background' asignado exitosamente.");
+                }
+                else
+                {
+                    Debug.LogWarning("BackgroundSetup: El tag 'Background' no está definido en el proyecto. Usando 'Untagged'.");
+                    backgroundObj.tag = "Untagged";
+                }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                Debug.LogWarning("BackgroundSetup: No se pudo asignar el tag 'Background'. No es crítico.");
+                Debug.LogWarning("BackgroundSetup: No se pudo asignar el tag 'Background'. Error: " + ex.Message + ". Usando 'Untagged'.");
+                backgroundObj.tag = "Untagged";
             }
 
             Debug.Log("BackgroundSetup: Objeto de fondo creado en posición: " + backgroundObj.transform.position);
@@ -190,13 +199,26 @@ public class BackgroundSetup : MonoBehaviour
             }
 
             // Forzar la creación de un nuevo fondo
-            SetupCustomBackground();
-
-            Debug.Log("BackgroundSetup: Actualización de fondo completada.");
+            SetupCustomBackground();            Debug.Log("BackgroundSetup: Actualización de fondo completada.");
         }
         catch (System.Exception e)
         {
             Debug.LogError("BackgroundSetup: Error al forzar la actualización del fondo: " + e.Message);
+        }
+    }
+
+    // Método auxiliar para verificar si un tag está definido
+    private bool IsTagDefined(string tagName)
+    {
+        try
+        {
+            // Intentar crear un array de objetos con el tag. Si el tag no existe, se lanza una excepción
+            GameObject.FindGameObjectsWithTag(tagName);
+            return true;
+        }
+        catch (UnityEngine.UnityException)
+        {
+            return false;
         }
     }
 }

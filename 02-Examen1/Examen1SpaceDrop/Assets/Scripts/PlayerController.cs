@@ -78,16 +78,24 @@ public class PlayerController : MonoBehaviour
                 }
             }
             Rigidbody2D prefabRb = playerPrefab.AddComponent<Rigidbody2D>();
-            prefabRb.gravityScale = 0f;
-
-            // Asegurar que el prefab tenga el tag correcto
+            prefabRb.gravityScale = 0f;            // Asegurar que el prefab tenga el tag correcto
             try
             {
-                playerPrefab.tag = "Player";
+                // Verificar si el tag existe antes de asignarlo
+                if (IsTagDefined("Player"))
+                {
+                    playerPrefab.tag = "Player";
+                }
+                else
+                {
+                    Debug.LogWarning("PlayerController: El tag 'Player' no está definido. Usando 'Untagged'.");
+                    playerPrefab.tag = "Untagged";
+                }
             }
-            catch
+            catch (System.Exception ex)
             {
-                Debug.LogWarning("No se pudo asignar el tag 'Player' al prefab");
+                Debug.LogWarning("PlayerController: No se pudo asignar el tag 'Player'. Error: " + ex.Message);
+                playerPrefab.tag = "Untagged";
             }
 
             // Desactivar el prefab y configurarlo en el GameManager
@@ -212,26 +220,45 @@ public class PlayerController : MonoBehaviour
         }
 
         // Crear la bala
-        GameObject bullet = Instantiate(bulletPrefab, shootPosition, Quaternion.identity);
-
-        // Asignar el tag PlayerBullet si no lo tiene
+        GameObject bullet = Instantiate(bulletPrefab, shootPosition, Quaternion.identity);        // Asignar el tag PlayerBullet si no lo tiene
         if (!bullet.CompareTag("PlayerBullet"))
         {
             try
             {
-                bullet.tag = "PlayerBullet";
+                if (IsTagDefined("PlayerBullet"))
+                {
+                    bullet.tag = "PlayerBullet";
+                }
+                else
+                {
+                    Debug.LogWarning("PlayerController: El tag 'PlayerBullet' no está definido. Usando nombre en su lugar.");
+                    bullet.name = "PlayerBullet";
+                }
             }
-            catch
+            catch (System.Exception ex)
             {
-                // Si el tag no existe, usar el nombre
+                Debug.LogWarning("PlayerController: Error al asignar tag a bala: " + ex.Message);
                 bullet.name = "PlayerBullet";
             }
-        }
-
-        // Reproducir sonido de disparo
+        }        // Reproducir sonido de disparo
         if (audioSource != null && shootSound != null)
         {
             audioSource.PlayOneShot(shootSound);
+        }
+    }
+
+    // Método auxiliar para verificar si un tag está definido
+    private bool IsTagDefined(string tagName)
+    {
+        try
+        {
+            // Intentar crear un array de objetos con el tag. Si el tag no existe, se lanza una excepción
+            GameObject.FindGameObjectsWithTag(tagName);
+            return true;
+        }
+        catch (UnityEngine.UnityException)
+        {
+            return false;
         }
     }
 }
