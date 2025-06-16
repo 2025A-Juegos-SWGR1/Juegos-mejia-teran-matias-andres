@@ -193,9 +193,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("ERROR: No hay prefab de jugador asignado para crear uno nuevo. Verificar que PlayerController esté configurando el prefab correctamente.");
         }
-    }
-
-    public void GameOver()
+    }    public void GameOver()
     {
         if (!isGameOver)
         {
@@ -208,23 +206,33 @@ public class GameManager : MonoBehaviour
                 audioSource.PlayOneShot(gameOverSound);
             }
 
-            // Mostrar panel de Game Over
-            if (gameOverUI != null)
+            // Notificar al GameStateManager
+            GameStateManager gameStateManager = GameStateManager.Instance;
+            if (gameStateManager != null)
             {
-                gameOverUI.SetActive(true);
+                gameStateManager.GameOver();
             }
             else
             {
-                // Solo mostrar el warning una vez
-                if (!gameOverWarningShown)
+                // Comportamiento de respaldo si no hay GameStateManager
+                // Mostrar panel de Game Over
+                if (gameOverUI != null)
                 {
-                    Debug.LogWarning("No hay panel de GameOver asignado - la funcionalidad será limitada");
-                    gameOverWarningShown = true;
+                    gameOverUI.SetActive(true);
                 }
-            }
+                else
+                {
+                    // Solo mostrar el warning una vez
+                    if (!gameOverWarningShown)
+                    {
+                        Debug.LogWarning("No hay panel de GameOver asignado - la funcionalidad será limitada");
+                        gameOverWarningShown = true;
+                    }
+                }
 
-            // Reiniciar el juego después de un tiempo
-            Invoke("RestartGame", 3f);
+                // Reiniciar el juego después de un tiempo (comportamiento original)
+                Invoke("RestartGame", 3f);
+            }
         }
     }// Método para reiniciar el juego
     public void RestartGame()
@@ -251,9 +259,7 @@ public class GameManager : MonoBehaviour
                 audioSource.PlayOneShot(scoreSound);
             }
         }
-    }
-
-    // Método para actualizar la UI de puntuación
+    }    // Método para actualizar la UI de puntuación
     private void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -275,7 +281,14 @@ public class GameManager : MonoBehaviour
                 Debug.Log("GameManager: Puntuación actual: " + score);
             }
         }
-    }    // Método para reiniciar las variables del juego
+        
+        // Notificar al MenuManager si existe
+        MenuManager menuManager = MenuManager.Instance;
+        if (menuManager != null)
+        {
+            menuManager.UpdateScore(score);
+        }
+    }// Método para reiniciar las variables del juego
     public void ResetGame()
     {
         try
@@ -300,14 +313,19 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("GameManager: Error al reiniciar el juego: " + e.Message);
         }
-    }
-
-    // Método para actualizar la UI de vidas
+    }    // Método para actualizar la UI de vidas
     private void UpdateLivesUI()
     {
         if (livesText != null)
         {
             livesText.text = "Vidas: " + currentLives;
+        }
+        
+        // Notificar al MenuManager si existe
+        MenuManager menuManager = MenuManager.Instance;
+        if (menuManager != null)
+        {
+            menuManager.UpdateLives(currentLives);
         }
     }
 
