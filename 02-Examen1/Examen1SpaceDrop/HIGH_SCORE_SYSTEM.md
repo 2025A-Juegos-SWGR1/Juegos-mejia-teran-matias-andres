@@ -3,6 +3,7 @@
 ## ✨ Funcionalidades Implementadas
 
 ### 🏆 Puntuación Máxima Persistente
+
 - **Almacenamiento permanente**: Se guarda usando Unity PlayerPrefs
 - **Se mantiene entre sesiones**: No se pierde al cerrar el juego
 - **Actualización automática**: Se actualiza cuando superas tu récord actual
@@ -10,16 +11,19 @@
 ### 📍 Ubicaciones de la UI
 
 #### 1. **Menú Principal**
+
 - Muestra el récord actual debajo del título del juego
 - Color amarillo dorado para destacar
 - Se actualiza automáticamente al regresar al menú
 
 #### 2. **Durante el Juego**
+
 - Aparece en la parte superior centro de la pantalla
 - Color amarillo para diferenciar de la puntuación actual
 - Se actualiza en tiempo real cuando estableces un nuevo récord
 
 #### 3. **Pantalla de Game Over**
+
 - Muestra el récord actual para comparar con tu puntuación final
 - Color cian para destacar
 - Te permite ver si lograste un nuevo récord
@@ -29,11 +33,12 @@
 ### Métodos Principales
 
 #### En GameManager.cs:
+
 ```csharp
 // Cargar puntuación máxima al iniciar
 highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
 
-// Verificar nuevo récord al sumar puntos  
+// Verificar nuevo récord al sumar puntos
 if (score > highScore) {
     highScore = score;
     SaveHighScore();
@@ -47,6 +52,7 @@ private void SaveHighScore() {
 ```
 
 #### En MenuManager.cs:
+
 ```csharp
 // Actualizar UI en tiempo real
 public void UpdateHighScore(int highScore) {
@@ -66,11 +72,13 @@ public void UpdateHighScore(int highScore) {
 ## 🎨 Diseño Visual
 
 ### Colores por Contexto:
-- **Menú Principal**: Amarillo dorado (#FFFF00) - Llamativo y elegante  
+
+- **Menú Principal**: Amarillo dorado (#FFFF00) - Llamativo y elegante
 - **Durante el Juego**: Amarillo (#FFFF00) - Visible pero no distrae
 - **Game Over**: Cian (#00FFFF) - Contrasta con el rojo del Game Over
 
 ### Posicionamiento:
+
 - **Menú Principal**: Centro, debajo del título
 - **Gameplay**: Superior centro, debajo del botón de pausa
 - **Game Over**: Entre la puntuación final y los botones
@@ -78,16 +86,19 @@ public void UpdateHighScore(int highScore) {
 ## 🚀 Características Avanzadas
 
 ### 1. **Notificación de Nuevo Récord**
+
 ```
 Debug.Log("¡Nuevo récord! Puntuación máxima: " + highScore);
 ```
 
 ### 2. **Persistencia Robusta**
+
 - Clave única: `"SpaceDrop_HighScore"`
 - Valor por defecto: 0 si no existe dato guardado
 - Guardado inmediato al establecer nuevo récord
 
 ### 3. **Integración Completa**
+
 - Compatible con el sistema de UI existente
 - No interfiere con la puntuación actual
 - Se actualiza en todos los paneles automáticamente
@@ -95,16 +106,19 @@ Debug.Log("¡Nuevo récord! Puntuación máxima: " + highScore);
 ## 🎮 Experiencia del Jugador
 
 ### Primera Vez:
+
 1. Récord muestra "0" en todos los paneles
 2. Cualquier puntuación se convierte en el primer récord
 3. Se guarda automáticamente
 
 ### Siguientes Partidas:
+
 1. Muestra tu mejor puntuación anterior
 2. Te motiva a superar tu propio récord
 3. Celebra cuando logras un nuevo récord
 
 ### Persistente:
+
 - El récord se mantiene aunque cierres Unity
 - Se mantiene aunque reinicies la computadora
 - Solo se resetea si borras los PlayerPrefs
@@ -112,6 +126,7 @@ Debug.Log("¡Nuevo récord! Puntuación máxima: " + highScore);
 ## 🛠️ Funciones Adicionales
 
 ### Métodos Públicos Disponibles:
+
 ```csharp
 // Obtener puntuación máxima actual
 int record = gameManager.GetHighScore();
@@ -121,6 +136,7 @@ gameManager.ResetStats();
 ```
 
 ### Casos de Uso:
+
 - **Desarrollo**: Usar `ResetStats()` para pruebas
 - **Distribución**: El récord se mantiene entre actualizaciones del juego
 - **Competencia**: Los jugadores pueden competir por el récord más alto
@@ -128,6 +144,7 @@ gameManager.ResetStats();
 ## ✅ Verificación
 
 ### Para Confirmar que Funciona:
+
 1. **Ejecuta el juego** - Verifica que aparece "Récord: 0" en el menú
 2. **Juega y consigue puntos** - Verifica que el récord se actualiza durante el juego
 3. **Ve al Game Over** - Verifica que muestra tu nueva puntuación máxima
@@ -135,9 +152,10 @@ gameManager.ResetStats();
 5. **Supera tu récord** - Verifica que se actualiza y muestra el mensaje en la consola
 
 ### Mensajes de Debug:
+
 ```
 Puntuación máxima cargada: [número]
-¡Nuevo récord! Puntuación máxima: [número]  
+¡Nuevo récord! Puntuación máxima: [número]
 Puntuación máxima guardada: [número]
 ```
 

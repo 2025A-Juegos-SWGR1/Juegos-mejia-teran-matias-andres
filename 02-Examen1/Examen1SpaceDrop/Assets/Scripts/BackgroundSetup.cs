@@ -199,7 +199,7 @@ public class BackgroundSetup : MonoBehaviour
             }
 
             // Forzar la creación de un nuevo fondo
-            SetupCustomBackground();            Debug.Log("BackgroundSetup: Actualización de fondo completada.");
+            SetupCustomBackground(); Debug.Log("BackgroundSetup: Actualización de fondo completada.");
         }
         catch (System.Exception e)
         {

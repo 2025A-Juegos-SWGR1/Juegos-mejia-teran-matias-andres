@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     }    // Variables para controlar el estado del juego
     public bool isGameOver = false;
     public int score = 0;
-    
+
     [Header("Sistema de Puntuación")]
     public int highScore = 0;     // Puntuación máxima alcanzada
     private const string HIGH_SCORE_KEY = "SpaceDrop_HighScore"; // Clave para guardar en PlayerPrefs
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     public Text livesText;        // Texto para mostrar las vidas
     public Text highScoreText;    // Texto para mostrar la puntuación máxima
     public GameObject gameOverUI; // Panel de Game Over    [Header("Audio")]
-    public AudioClip gameOverSound; 
+    public AudioClip gameOverSound;
     public AudioClip scoreSound;
     public AudioClip backgroundMusic;    // Música de fondo del juego
 
@@ -82,13 +82,13 @@ public class GameManager : MonoBehaviour
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
-            
+
             // Configurar AudioSource separado para música de fondo
             musicAudioSource = gameObject.AddComponent<AudioSource>();
             musicAudioSource.loop = true;
             musicAudioSource.playOnAwake = false;
             musicAudioSource.volume = 0.3f; // Música más suave
-            
+
             // Iniciar música de fondo si está asignada
             if (backgroundMusic != null)
             {
@@ -218,7 +218,8 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("ERROR: No hay prefab de jugador asignado para crear uno nuevo. Verificar que PlayerController esté configurando el prefab correctamente.");
         }
-    }    public void GameOver()
+    }
+    public void GameOver()
     {
         if (!isGameOver)
         {
@@ -275,7 +276,7 @@ public class GameManager : MonoBehaviour
         if (!isGameOver)
         {
             score += points;
-            
+
             // Verificar si se superó la puntuación máxima
             if (score > highScore)
             {
@@ -318,7 +319,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("GameManager: Puntuación actual: " + score);
             }
         }
-        
+
         // Notificar al MenuManager si existe
         MenuManager menuManager = MenuManager.Instance;
         if (menuManager != null)
@@ -334,7 +335,7 @@ public class GameManager : MonoBehaviour
         {
             highScoreText.text = "Récord: " + highScore;
         }
-        
+
         // Notificar al MenuManager si existe
         MenuManager menuManager = MenuManager.Instance;
         if (menuManager != null)
@@ -365,7 +366,7 @@ public class GameManager : MonoBehaviour
             musicAudioSource.Pause();
         }
     }
-    
+
     public void ResumeMusic()
     {
         if (musicAudioSource != null && !musicAudioSource.isPlaying && backgroundMusic != null)
@@ -373,7 +374,7 @@ public class GameManager : MonoBehaviour
             musicAudioSource.UnPause();
         }
     }
-    
+
     public void StopMusic()
     {
         if (musicAudioSource != null)
@@ -381,7 +382,7 @@ public class GameManager : MonoBehaviour
             musicAudioSource.Stop();
         }
     }
-    
+
     public void SetMusicVolume(float volume)
     {
         if (musicAudioSource != null)
@@ -434,7 +435,7 @@ public class GameManager : MonoBehaviour
         {
             livesText.text = "Vidas: " + currentLives;
         }
-        
+
         // Notificar al MenuManager si existe
         MenuManager menuManager = MenuManager.Instance;
         if (menuManager != null)

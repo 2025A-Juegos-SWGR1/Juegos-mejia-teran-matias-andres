@@ -124,7 +124,8 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("Error al inicializar el GameManager: " + e.Message);
         }
-    }    void Update()
+    }
+    void Update()
     {
         // Verificar el estado del juego antes de procesar input
         GameStateManager gameStateManager = GameStateManager.Instance;
@@ -133,7 +134,7 @@ public class PlayerController : MonoBehaviour
             movement = Vector2.zero; // Detener movimiento si no estamos jugando
             return;
         }
-        
+
         // Capturar input de movimiento
         float moveHorizontal = Input.GetAxis("Horizontal"); // A y D, o flechas izquierda y derecha
         float moveVertical = Input.GetAxis("Vertical");     // W y S, o flechas arriba y abajo

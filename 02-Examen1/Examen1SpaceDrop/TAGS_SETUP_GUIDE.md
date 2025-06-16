@@ -1,6 +1,7 @@
 # Guía de Configuración de Tags en Unity
 
 ## Problema Resuelto
+
 El error "Tag: Background is not defined" ha sido solucionado mediante la implementación de verificaciones de tags en el código. El juego ahora funcionará correctamente sin estos tags, pero puedes agregarlos opcionalmente para mejor organización.
 
 ## Tags Utilizados en el Proyecto
@@ -16,10 +17,12 @@ Este proyecto utiliza los siguientes tags personalizados:
 Si deseas definir estos tags en Unity para mejor organización y funcionalidad completa:
 
 ### Paso 1: Abrir el Tag Manager
+
 1. En Unity, ve al menú **Edit** → **Project Settings**
 2. En la ventana que se abre, selecciona **Tags and Layers** en el panel izquierdo
 
 ### Paso 2: Agregar los Tags
+
 1. En la sección **Tags**, verás una lista con "Untagged" y algunos tags predeterminados
 2. Haz clic en el primer slot vacío (o en el botón **+**)
 3. Agrega los siguientes tags uno por uno:
@@ -28,6 +31,7 @@ Si deseas definir estos tags en Unity para mejor organización y funcionalidad c
    - `PlayerBullet`
 
 ### Paso 3: Aplicar Tags (Opcional)
+
 Una vez que los tags estén definidos, el código automáticamente los aplicará a los objetos correspondientes.
 
 ## Código de Seguridad Implementado

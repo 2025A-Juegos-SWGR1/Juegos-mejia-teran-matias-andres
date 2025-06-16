@@ -1,6 +1,7 @@
 # Solución al Problema de UI Duplicada
 
 ## Problema Detectado
+
 Se estaba mostrando un contador de puntos y vidas duplicado debido a que dos scripts estaban creando elementos de UI simultáneamente:
 
 1. **UISetup.cs** - Script original que creaba elementos de UI básicos
@@ -11,15 +12,18 @@ Se estaba mostrando un contador de puntos y vidas duplicado debido a que dos scr
 ### 1. Modificación en MenuManager.cs
 
 #### A. Deshabilitar UISetup automáticamente
+
 - Agregado método `DisableUISetupScript()` que busca y deshabilita el script UISetup al inicio
 - Esto previene que ambos scripts trabajen al mismo tiempo
 
 #### B. Detección mejorada de elementos existentes
+
 - El método `CreateGameplayUI()` ahora busca TODOS los textos existentes en la escena
 - Detecta automáticamente elementos de UI creados por otros scripts
 - Solo crea nuevos elementos si no encuentra ninguno existente
 
 #### C. Verificación retardada de duplicados
+
 - Cambio de `HandleDuplicateUIElements()` a ejecutarse después de que todos los scripts se inicialicen
 - Usa `DelayedDuplicateCheck()` con `WaitForEndOfFrame()` para asegurar detección completa
 
@@ -36,17 +40,20 @@ Se estaba mostrando un contador de puntos y vidas duplicado debido a que dos scr
 ## Comportamiento Esperado
 
 ### Caso 1: UISetup ya creó elementos
+
 - MenuManager detecta los elementos existentes
 - Los reutiliza y los mueve al panel de gameplay
 - No crea elementos nuevos
 - Deshabilita UISetup para evitar conflictos futuros
 
 ### Caso 2: No hay elementos existentes
+
 - MenuManager crea los elementos necesarios
 - Los asigna al GameManager
 - UISetup permanece deshabilitado
 
 ### Caso 3: Elementos duplicados detectados
+
 - El sistema oculta automáticamente los elementos duplicados
 - Mantiene solo los que están asignados al GameManager
 - Muestra advertencias en la consola para debugging

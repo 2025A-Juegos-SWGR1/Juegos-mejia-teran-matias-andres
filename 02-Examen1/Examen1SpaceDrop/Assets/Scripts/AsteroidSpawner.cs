@@ -60,7 +60,8 @@ public class AsteroidSpawner : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Kinematic;        // Iniciar el spawner inmediatamente para el primer asteroide
         SpawnAsteroid();        // Iniciar el aumento de dificultad
         InvokeRepeating("IncreaseDifficulty", difficultyIncreaseTime, difficultyIncreaseTime);
-    }    void Update()
+    }
+    void Update()
     {
         // Verificar el estado del juego antes de generar asteroides
         GameStateManager gameStateManager = GameStateManager.Instance;
@@ -68,7 +69,7 @@ public class AsteroidSpawner : MonoBehaviour
         {
             return; // No generar asteroides si no estamos jugando
         }
-        
+
         // Verificar si el GameManager indica que el juego ha terminado (comportamiento de respaldo)
         if (GameManager.Instance != null && GameManager.Instance.isGameOver)
         {

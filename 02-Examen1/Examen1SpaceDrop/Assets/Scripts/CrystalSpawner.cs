@@ -65,7 +65,8 @@ public class CrystalSpawner : MonoBehaviour
 
         // Iniciar el aumento de dificultad
         InvokeRepeating("IncreaseDifficulty", difficultyIncreaseTime, difficultyIncreaseTime);
-    }    void Update()
+    }
+    void Update()
     {
         // Verificar el estado del juego antes de generar cristales
         GameStateManager gameStateManager = GameStateManager.Instance;
@@ -73,7 +74,7 @@ public class CrystalSpawner : MonoBehaviour
         {
             return; // No generar cristales si no estamos jugando
         }
-        
+
         // Verificar si el GameManager indica que el juego ha terminado (comportamiento de respaldo)
         if (GameManager.Instance != null && GameManager.Instance.isGameOver)
         {
