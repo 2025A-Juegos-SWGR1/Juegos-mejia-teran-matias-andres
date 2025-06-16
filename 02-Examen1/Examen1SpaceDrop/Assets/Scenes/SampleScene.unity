@@ -339,7 +339,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.27, y: -1.32, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -620,6 +620,12 @@ MonoBehaviour:
   spawnDistance: 12
   maxAsteroids: 10
   forceCloseSpawn: 1
+  smallAsteroidChance: 50
+  mediumAsteroidChance: 35
+  largeAsteroidChance: 15
+  smallAsteroidSprite: {fileID: 0}
+  mediumAsteroidSprite: {fileID: 0}
+  largeAsteroidSprite: {fileID: 0}
   difficultyMultiplier: 0.95
   minSpawnTimeLimit: 0.5
   difficultyIncreaseTime: 30
