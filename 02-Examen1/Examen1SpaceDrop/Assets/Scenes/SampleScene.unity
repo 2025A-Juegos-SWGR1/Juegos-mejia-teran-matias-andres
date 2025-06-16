@@ -734,6 +734,7 @@ MonoBehaviour:
   gameOverUI: {fileID: 0}
   gameOverSound: {fileID: 8300000, guid: c4d28a748fba0764ab592d90d674f067, type: 3}
   scoreSound: {fileID: 8300000, guid: d52746e54824ee54faa1103a64aa8c22, type: 3}
+  backgroundMusic: {fileID: 8300000, guid: 6eca4b1c925c2334285d72827bc758bb, type: 3}
 --- !u!4 &1819746312
 Transform:
   m_ObjectHideFlags: 0

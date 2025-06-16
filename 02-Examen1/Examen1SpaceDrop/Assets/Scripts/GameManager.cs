@@ -47,12 +47,13 @@ public class GameManager : MonoBehaviour
     public Text scoreText;        // Texto para mostrar la puntuación
     public Text livesText;        // Texto para mostrar las vidas
     public Text highScoreText;    // Texto para mostrar la puntuación máxima
-    public GameObject gameOverUI; // Panel de Game Over
-
-    [Header("Audio")]
-    public AudioClip gameOverSound; public AudioClip scoreSound;
+    public GameObject gameOverUI; // Panel de Game Over    [Header("Audio")]
+    public AudioClip gameOverSound; 
+    public AudioClip scoreSound;
+    public AudioClip backgroundMusic;    // Música de fondo del juego
 
     private AudioSource audioSource;
+    private AudioSource musicAudioSource;  // AudioSource separado para música
 
     // Variables para el sistema de respawn del jugador
     private GameObject playerPrefab;
@@ -80,6 +81,20 @@ public class GameManager : MonoBehaviour
             if (audioSource == null)
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
+            }
+            
+            // Configurar AudioSource separado para música de fondo
+            musicAudioSource = gameObject.AddComponent<AudioSource>();
+            musicAudioSource.loop = true;
+            musicAudioSource.playOnAwake = false;
+            musicAudioSource.volume = 0.3f; // Música más suave
+            
+            // Iniciar música de fondo si está asignada
+            if (backgroundMusic != null)
+            {
+                musicAudioSource.clip = backgroundMusic;
+                musicAudioSource.Play();
+                Debug.Log("Música de fondo iniciada");
             }
 
             // Cargar puntuación máxima guardada
@@ -340,6 +355,39 @@ public class GameManager : MonoBehaviour
     public int GetHighScore()
     {
         return highScore;
+    }
+
+    // Métodos para controlar la música de fondo
+    public void PauseMusic()
+    {
+        if (musicAudioSource != null && musicAudioSource.isPlaying)
+        {
+            musicAudioSource.Pause();
+        }
+    }
+    
+    public void ResumeMusic()
+    {
+        if (musicAudioSource != null && !musicAudioSource.isPlaying && backgroundMusic != null)
+        {
+            musicAudioSource.UnPause();
+        }
+    }
+    
+    public void StopMusic()
+    {
+        if (musicAudioSource != null)
+        {
+            musicAudioSource.Stop();
+        }
+    }
+    
+    public void SetMusicVolume(float volume)
+    {
+        if (musicAudioSource != null)
+        {
+            musicAudioSource.volume = Mathf.Clamp01(volume);
+        }
     }
     // Método público para obtener la puntuación actual
     public int GetScore()
