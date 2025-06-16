@@ -11,17 +11,20 @@ public class MenuManager : MonoBehaviour
     
     [Header("Elementos del Menú Principal")]
     public Text titleText;
+    public Text mainMenuHighScoreText;
     public Button playButton;
     public Button exitButton;
     
     [Header("Elementos de Gameplay")]
     public Text scoreText;
     public Text livesText;
+    public Text highScoreText;
     public Button pauseButton;
     
     [Header("Elementos de Game Over")]
     public Text gameOverTitleText;
     public Text finalScoreText;
+    public Text gameOverHighScoreText;
     public Button restartButton;
     public Button mainMenuButton;
     
@@ -192,6 +195,24 @@ public class MenuManager : MonoBehaviour
         titleRT.anchoredPosition = Vector2.zero;
         titleRT.sizeDelta = new Vector2(600, 100);
         
+        // Texto de puntuación máxima en menú principal
+        GameObject mainMenuHighScoreObj = new GameObject("MainMenuHighScoreText");
+        mainMenuHighScoreObj.transform.SetParent(panel.transform, false);
+        
+        RectTransform mainMenuHSRT = mainMenuHighScoreObj.AddComponent<RectTransform>();
+        Text mainMenuHighScore = mainMenuHighScoreObj.AddComponent<Text>();
+        mainMenuHighScore.text = "Récord: 0";
+        mainMenuHighScore.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        mainMenuHighScore.fontSize = 28;
+        mainMenuHighScore.color = Color.yellow;
+        mainMenuHighScore.alignment = TextAnchor.MiddleCenter;
+        mainMenuHighScore.fontStyle = FontStyle.Bold;
+        
+        mainMenuHSRT.anchorMin = new Vector2(0.5f, 0.6f);
+        mainMenuHSRT.anchorMax = new Vector2(0.5f, 0.6f);
+        mainMenuHSRT.anchoredPosition = Vector2.zero;
+        mainMenuHSRT.sizeDelta = new Vector2(400, 50);
+        
         // Botón Jugar
         GameObject playButtonObj = CreateButton("PlayButton", "JUGAR", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(200, 60));
         Button playBtn = playButtonObj.GetComponent<Button>();
@@ -205,6 +226,7 @@ public class MenuManager : MonoBehaviour
         // Asignar referencias
         mainMenuPanel = panel;
         titleText = title;
+        mainMenuHighScoreText = mainMenuHighScore;
         playButton = playBtn;
         exitButton = exitBtn;
     }    private void CreateGameplayUI(Canvas canvas)
@@ -330,17 +352,72 @@ public class MenuManager : MonoBehaviour
             Debug.Log("MenuManager: Creado nuevo texto de vidas");
         }
         
+        // Buscar o crear texto de puntuación máxima
+        Text highScore = null;
+        Text[] allHighScoreTexts = FindObjectsByType<Text>(FindObjectsSortMode.None);
+        foreach (Text text in allHighScoreTexts)
+        {
+            if (text.text.Contains("Récord") && highScore == null)
+            {
+                highScore = text;
+                Debug.Log("MenuManager: Encontrado texto de puntuación máxima existente: " + text.name);
+                break;
+            }
+        }
+        
+        if (highScore == null)
+        {
+            // Crear nuevo texto de puntuación máxima
+            GameObject highScoreObj = new GameObject("HighScoreText");
+            highScoreObj.transform.SetParent(panel.transform, false);
+            
+            // Agregar RectTransform y Text
+            RectTransform highScoreRT = highScoreObj.AddComponent<RectTransform>();
+            highScore = highScoreObj.AddComponent<Text>();
+            highScore.text = "Récord: 0";
+            highScore.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            highScore.fontSize = 20;
+            highScore.color = Color.yellow;
+            highScore.alignment = TextAnchor.UpperCenter;
+            
+            // Posicionar en la parte superior centro, debajo del botón de pausa
+            highScoreRT.anchorMin = new Vector2(0.5f, 1);
+            highScoreRT.anchorMax = new Vector2(0.5f, 1);
+            highScoreRT.anchoredPosition = new Vector2(0, -80);
+            highScoreRT.sizeDelta = new Vector2(200, 30);
+            highScoreRT.pivot = new Vector2(0.5f, 1);
+            
+            Debug.Log("MenuManager: Creado nuevo texto de puntuación máxima");
+        }
+        else
+        {
+            // Usar el texto existente y moverlo al panel
+            highScore.transform.SetParent(panel.transform, false);
+            
+            RectTransform highScoreRT = highScore.GetComponent<RectTransform>();
+            if (highScoreRT != null)
+            {
+                highScoreRT.anchorMin = new Vector2(0.5f, 1);
+                highScoreRT.anchorMax = new Vector2(0.5f, 1);
+                highScoreRT.anchoredPosition = new Vector2(0, -80);
+                highScoreRT.sizeDelta = new Vector2(200, 30);
+                highScoreRT.pivot = new Vector2(0.5f, 1);
+            }
+            
+            Debug.Log("MenuManager: Usando texto de puntuación máxima existente");
+        }
+        
         // Botón de pausa (esquina superior centro)
         GameObject pauseButtonObj = CreateButton("PauseButton", "| |", panel.transform, new Vector2(0.5f, 1f), new Vector2(60, 40));
         RectTransform pauseRT = pauseButtonObj.GetComponent<RectTransform>();
         pauseRT.anchoredPosition = new Vector2(0, -30);
         
         Button pauseBtn = pauseButtonObj.GetComponent<Button>();
-        pauseBtn.onClick.AddListener(() => PauseGame());
-          // Asignar referencias
+        pauseBtn.onClick.AddListener(() => PauseGame());        // Asignar referencias
         gameplayUI = panel;
         scoreText = score;
         livesText = lives;
+        highScoreText = highScore;
         pauseButton = pauseBtn;
         
         // Asignar al GameManager solo si no tiene referencias ya
@@ -356,6 +433,12 @@ public class MenuManager : MonoBehaviour
             {
                 gameManager.livesText = lives;
                 Debug.Log("MenuManager: Texto de vidas asignado al GameManager");
+            }
+            
+            if (gameManager.highScoreText == null)
+            {
+                gameManager.highScoreText = highScore;
+                Debug.Log("MenuManager: Texto de puntuación máxima asignado al GameManager");
             }
         }
     }
@@ -410,19 +493,36 @@ public class MenuManager : MonoBehaviour
         finalScoreRT.anchoredPosition = Vector2.zero;
         finalScoreRT.sizeDelta = new Vector2(400, 50);
         
-        // Botón Reiniciar
-        GameObject restartButtonObj = CreateButton("RestartButton", "REINICIAR", panel.transform, new Vector2(0.5f, 0.4f), new Vector2(200, 60));
+        // Texto de puntuación máxima en Game Over
+        GameObject gameOverHighScoreObj = new GameObject("GameOverHighScoreText");
+        gameOverHighScoreObj.transform.SetParent(panel.transform, false);
+        
+        // Agregar RectTransform y Text
+        RectTransform gameOverHighScoreRT = gameOverHighScoreObj.AddComponent<RectTransform>();
+        Text gameOverHighScore = gameOverHighScoreObj.AddComponent<Text>();
+        gameOverHighScore.text = "Récord: 0";
+        gameOverHighScore.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        gameOverHighScore.fontSize = 22;
+        gameOverHighScore.color = Color.cyan;
+        gameOverHighScore.alignment = TextAnchor.MiddleCenter;
+          gameOverHighScoreRT.anchorMin = new Vector2(0.5f, 0.45f);
+        gameOverHighScoreRT.anchorMax = new Vector2(0.5f, 0.45f);
+        gameOverHighScoreRT.anchoredPosition = Vector2.zero;
+        gameOverHighScoreRT.sizeDelta = new Vector2(300, 40);
+        
+        // Botón Reiniciar (movido más abajo para dar espacio)
+        GameObject restartButtonObj = CreateButton("RestartButton", "REINICIAR", panel.transform, new Vector2(0.5f, 0.35f), new Vector2(200, 60));
         Button restartBtn = restartButtonObj.GetComponent<Button>();
         restartBtn.onClick.AddListener(() => RestartGame());
         
-        // Botón Menú Principal
-        GameObject menuButtonObj = CreateButton("MainMenuButton", "MENÚ PRINCIPAL", panel.transform, new Vector2(0.5f, 0.25f), new Vector2(250, 60));
+        // Botón Menú Principal (movido más abajo)
+        GameObject menuButtonObj = CreateButton("MainMenuButton", "MENÚ PRINCIPAL", panel.transform, new Vector2(0.5f, 0.2f), new Vector2(250, 60));
         Button menuBtn = menuButtonObj.GetComponent<Button>();
-        menuBtn.onClick.AddListener(() => ReturnToMainMenu());
-          // Asignar referencias
+        menuBtn.onClick.AddListener(() => ReturnToMainMenu());        // Asignar referencias
         gameOverPanel = panel;
         gameOverTitleText = title;
         finalScoreText = finalScore;
+        gameOverHighScoreText = gameOverHighScore;
         restartButton = restartBtn;
         mainMenuButton = menuBtn;
         
@@ -562,9 +662,14 @@ public class MenuManager : MonoBehaviour
                 break;
         }
     }
-    
-    public void ShowMainMenu()
+      public void ShowMainMenu()
     {
+        // Actualizar puntuación máxima en menú principal
+        if (mainMenuHighScoreText != null && gameManager != null)
+        {
+            mainMenuHighScoreText.text = $"Récord: {gameManager.GetHighScore()}";
+        }
+        
         SetAllPanelsInactive();
         if (mainMenuPanel != null)
         {
@@ -582,13 +687,18 @@ public class MenuManager : MonoBehaviour
         }
         Debug.Log("MenuManager: UI de gameplay mostrada");
     }
-    
-    public void ShowGameOverMenu()
+      public void ShowGameOverMenu()
     {
         // Actualizar puntuación final
         if (finalScoreText != null && gameManager != null)
         {
             finalScoreText.text = $"Puntuación Final: {gameManager.score}";
+        }
+        
+        // Actualizar puntuación máxima
+        if (gameOverHighScoreText != null && gameManager != null)
+        {
+            gameOverHighScoreText.text = $"Récord: {gameManager.GetHighScore()}";
         }
         
         SetAllPanelsInactive();
@@ -653,21 +763,19 @@ public class MenuManager : MonoBehaviour
             gameStateManager.ResumeGame();
         }
     }
-    
-    public void RestartGame()
+      public void RestartGame()
     {
         Debug.Log("MenuManager: Reiniciando juego...");
         
-        // Resetear el juego
+        // Usar el método de reinicio completo del GameManager que recarga la escena
         if (gameManager != null)
         {
-            gameManager.ResetGame();
+            gameManager.RestartGame();
         }
-        
-        // Cambiar estado a jugando
-        if (gameStateManager != null)
+        else
         {
-            gameStateManager.StartGame();
+            // Fallback: recargar escena manualmente
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
     }
     
@@ -712,6 +820,14 @@ public class MenuManager : MonoBehaviour
         if (livesText != null)
         {
             livesText.text = $"Vidas: {lives}";
+        }
+    }
+    
+    public void UpdateHighScore(int highScore)
+    {
+        if (highScoreText != null)
+        {
+            highScoreText.text = $"Récord: {highScore}";
         }
     }
     

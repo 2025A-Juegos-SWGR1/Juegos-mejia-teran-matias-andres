@@ -52,6 +52,7 @@
 - **Reanudar el tiempo** al jugar
 - **Deshabilitar controles** en menús
 - **Actualizar puntuación y vidas** en tiempo real
+- **🏆 Sistema de puntuación máxima** persistente (se guarda entre sesiones)
 - **Navegación** entre todas las pantallas
 - **Crear toda la interfaz** sin configuración manual
 
@@ -77,6 +78,7 @@ Busca estos mensajes en la consola:
 GameUIInitializer: ✓ Todos los sistemas están configurados correctamente.
 GameStateManager: Cambiando estado de MainMenu a Playing
 MenuManager: Menú principal mostrado
+Puntuación máxima cargada: [número]
 ```
 
 ## 🚨 Si Algo No Funciona
@@ -114,7 +116,27 @@ MenuManager: Verificando elementos de UI duplicados...
 - Ejecuta el juego una vez - el sistema se auto-corrige
 - Consulta `UI_DUPLICATE_FIX.md` para detalles técnicos
 
-## 🎨 Personalización Rápida
+## � Sistema de Puntuación Máxima
+
+### ¿Qué es?
+Un contador que guarda tu mejor puntuación de todas las partidas y la muestra en:
+- **Menú Principal**: Debajo del título en amarillo dorado  
+- **Durante el Juego**: Parte superior centro en amarillo
+- **Game Over**: Entre tu puntuación final y los botones en cian
+
+### ✨ Características:
+- **Persistente**: Se guarda aunque cierres el juego
+- **Automático**: Se actualiza cuando superas tu récord
+- **Motivacional**: Te anima a seguir jugando para superarte
+
+### 🎯 Para Verificar:
+1. Ejecuta el juego - debe aparecer "Récord: 0" (primera vez)
+2. Consigue puntos - el récord se actualiza en tiempo real
+3. Reinicia el juego - el récord se mantiene guardado
+
+Para detalles completos consulta: `HIGH_SCORE_SYSTEM.md`
+
+## �🎨 Personalización Rápida
 
 ### Cambiar Título:
 - En el `GameUIInitializer`, cambiar "Game Title"

@@ -33,6 +33,10 @@ public class GameManager : MonoBehaviour
     }    // Variables para controlar el estado del juego
     public bool isGameOver = false;
     public int score = 0;
+    
+    [Header("Sistema de Puntuación")]
+    public int highScore = 0;     // Puntuación máxima alcanzada
+    private const string HIGH_SCORE_KEY = "SpaceDrop_HighScore"; // Clave para guardar en PlayerPrefs
 
     [Header("Sistema de Vidas")]
     public int maxLives = 4;      // Número máximo de vidas
@@ -42,6 +46,7 @@ public class GameManager : MonoBehaviour
     [Header("UI Elements")]
     public Text scoreText;        // Texto para mostrar la puntuación
     public Text livesText;        // Texto para mostrar las vidas
+    public Text highScoreText;    // Texto para mostrar la puntuación máxima
     public GameObject gameOverUI; // Panel de Game Over
 
     [Header("Audio")]
@@ -77,6 +82,10 @@ public class GameManager : MonoBehaviour
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
 
+            // Cargar puntuación máxima guardada
+            highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
+            Debug.Log("Puntuación máxima cargada: " + highScore);
+
             // Reiniciar el juego para asegurar que todas las variables estén en su estado inicial
             ResetGame();
         }
@@ -105,6 +114,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);        // Actualizar la UI después de la espera
         UpdateScoreUI();
         UpdateLivesUI();
+        UpdateHighScoreUI();
 
         // Asegurarse de que el panel de Game Over esté oculto al inicio
         if (gameOverUI != null)
@@ -237,21 +247,31 @@ public class GameManager : MonoBehaviour
     }// Método para reiniciar el juego
     public void RestartGame()
     {
-        // Reinicia las variables del juego
-        ResetGame();
+        // Reinicia las variables del juego        ResetGame();
 
         // Recarga la escena actual
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
-    }// Método para aumentar la puntuación
+    }
+
+    // Método para aumentar la puntuación
     public void AddScore(int points)
     {
         if (!isGameOver)
         {
             score += points;
+            
+            // Verificar si se superó la puntuación máxima
+            if (score > highScore)
+            {
+                highScore = score;
+                SaveHighScore();
+                Debug.Log("¡Nuevo récord! Puntuación máxima: " + highScore);
+            }
 
             // Actualizar UI
             UpdateScoreUI();
+            UpdateHighScoreUI();
 
             // Reproducir sonido de puntuación
             if (audioSource != null && scoreSound != null)
@@ -259,7 +279,9 @@ public class GameManager : MonoBehaviour
                 audioSource.PlayOneShot(scoreSound);
             }
         }
-    }    // Método para actualizar la UI de puntuación
+    }
+
+    // Método para actualizar la UI de puntuación
     private void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -288,7 +310,52 @@ public class GameManager : MonoBehaviour
         {
             menuManager.UpdateScore(score);
         }
-    }// Método para reiniciar las variables del juego
+    }
+
+    // Método para actualizar la UI de puntuación máxima
+    private void UpdateHighScoreUI()
+    {
+        if (highScoreText != null)
+        {
+            highScoreText.text = "Récord: " + highScore;
+        }
+        
+        // Notificar al MenuManager si existe
+        MenuManager menuManager = MenuManager.Instance;
+        if (menuManager != null)
+        {
+            menuManager.UpdateHighScore(highScore);
+        }
+    }
+
+    // Método para guardar la puntuación máxima
+    private void SaveHighScore()
+    {
+        PlayerPrefs.SetInt(HIGH_SCORE_KEY, highScore);
+        PlayerPrefs.Save();
+        Debug.Log("Puntuación máxima guardada: " + highScore);
+    }
+
+    // Método público para obtener la puntuación máxima
+    public int GetHighScore()
+    {
+        return highScore;
+    }
+    // Método público para obtener la puntuación actual
+    public int GetScore()
+    {
+        return score;
+    }
+
+    // Método público para reiniciar las estadísticas del juego (llamado desde el menú)
+    public void ResetStats()
+    {
+        PlayerPrefs.DeleteKey(HIGH_SCORE_KEY);
+        PlayerPrefs.Save();
+        highScore = 0;
+        UpdateHighScoreUI();
+        Debug.Log("Estadísticas del juego reiniciadas");
+    }    // Método para reiniciar las variables del juego
     public void ResetGame()
     {
         try
@@ -297,11 +364,10 @@ public class GameManager : MonoBehaviour
             score = 0;
             currentLives = maxLives;
             isGameOver = false;
-            isPlayerRespawning = false;
-
-            // Actualizar UI
+            isPlayerRespawning = false;            // Actualizar UI
             UpdateScoreUI();
             UpdateLivesUI();
+            UpdateHighScoreUI();
 
             // Ocultar panel de Game Over si existe
             if (gameOverUI != null)

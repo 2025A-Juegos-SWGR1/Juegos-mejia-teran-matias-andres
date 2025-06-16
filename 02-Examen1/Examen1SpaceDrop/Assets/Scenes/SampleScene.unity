@@ -664,9 +664,9 @@ MonoBehaviour:
   asteroidPrefabs:
   - {fileID: 1869916678696123309, guid: e9e8efa7ae9c91846b7af9af812d8727, type: 3}
   minSpawnTime: 1
-  maxSpawnTime: 3
+  maxSpawnTime: 2
   spawnDistance: 12
-  maxAsteroids: 10
+  maxAsteroids: 20
   forceCloseSpawn: 1
   smallAsteroidChance: 50
   mediumAsteroidChance: 35
