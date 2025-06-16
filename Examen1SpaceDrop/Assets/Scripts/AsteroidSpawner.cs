@@ -11,14 +11,33 @@ public class AsteroidSpawner : MonoBehaviour
     public int maxAsteroids = 10;           // Número máximo de asteroides en pantalla
     public bool forceCloseSpawn = true;     // Forzar spawn cerca para debugging
 
-    [Header("Configuración de Dificultad")]
+    [Header("Configuración de Tipos de Asteroides")]
+    [Range(0f, 100f)]
+    public float smallAsteroidChance = 50f;  // 50% - Pequeños, 1 impacto, 30 puntos
+    [Range(0f, 100f)]
+    public float mediumAsteroidChance = 35f; // 35% - Medianos, 2 impactos, 20 puntos
+    [Range(0f, 100f)]
+    public float largeAsteroidChance = 15f;  // 15% - Grandes, 3 impactos, 10 puntos
+
+    [Header("Configuración de Sprites de Asteroides (Opcional)")]
+    [Tooltip("Si asignas sprites aquí, se aplicarán a todos los asteroides generados")]
+    public Sprite smallAsteroidSprite;       // Sprite para asteroides pequeños
+    public Sprite mediumAsteroidSprite;      // Sprite para asteroides medianos
+    public Sprite largeAsteroidSprite;       // Sprite para asteroides grandes    [Header("Configuración de Dificultad")]
     public float difficultyMultiplier = 0.95f;  // Factor de reducción del tiempo de spawn
     public float minSpawnTimeLimit = 0.5f;      // Límite mínimo del tiempo de spawn
     public float difficultyIncreaseTime = 30f;  // Cada cuánto aumenta la dificultad (segundos)
 
+    // Variables privadas
     private float nextSpawnTime;
-    private int asteroidsInScene = 0; void Start()
+    private int asteroidsInScene = 0;
+    private float[] normalizedAsteroidChances; // Probabilidades normalizadas para los tipos de asteroides
+
+    void Start()
     {
+        // Normalizar las probabilidades de los tipos de asteroides
+        NormalizeAsteroidProbabilities();
+
         // Validar que haya al menos un prefab asignado
         if (asteroidPrefabs == null || asteroidPrefabs.Length == 0)
         {
@@ -77,25 +96,29 @@ public class AsteroidSpawner : MonoBehaviour
         }
 
         // Determinar una posición aleatoria en el borde de la pantalla
-        Vector2 spawnPosition = GetRandomSpawnPosition();
-
-        // Instanciar el asteroide - NO como hijo para evitar problemas de visibilidad
+        Vector2 spawnPosition = GetRandomSpawnPosition();        // Instanciar el asteroide - NO como hijo para evitar problemas de visibilidad
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
-
-        // Dar un nombre descriptivo al asteroide
-        asteroid.name = "Asteroid_" + asteroidsInScene;
 
         if (asteroid == null)
         {
             Debug.LogError("No se pudo instanciar el asteroide.");
             return;
         }
-        asteroidsInScene++;
 
-        // Configurar dirección hacia abajo con ligera variación aleatoria
+        // Determinar el tamaño del asteroide basado en las probabilidades
+        AsteroidSize asteroidSize = GetRandomAsteroidSize();
+
+        // Configurar el asteroide
         AsteroidController controller = asteroid.GetComponent<AsteroidController>();
         if (controller != null)
-        {            // Calcular dirección hacia abajo con ligera variación horizontal
+        {
+            // Asignar sprites globales si están configurados
+            AssignSpritesToAsteroid(controller);
+
+            // Configurar el tamaño del asteroide (esto aplicará sprite, escala, salud y puntos)
+            controller.SetAsteroidSize(asteroidSize);
+
+            // Calcular dirección hacia abajo con ligera variación horizontal
             Vector2 direction = new Vector2(
                 Random.Range(-0.3f, 0.3f), // Pequeña variación horizontal
                 -1f                         // Siempre hacia abajo
@@ -106,7 +129,12 @@ public class AsteroidSpawner : MonoBehaviour
         else
         {
             Debug.LogWarning("El asteroide no tiene componente AsteroidController. Asegúrate de que el prefab tiene este componente.");
-        }        // Verificar que el asteroide tenga un sprite visible
+        }
+
+        // Dar un nombre descriptivo al asteroide
+        asteroid.name = $"Asteroid_{asteroidSize}_{asteroidsInScene}";
+
+        asteroidsInScene++;// Verificar que el asteroide tenga un sprite visible
         SpriteRenderer renderer = asteroid.GetComponent<SpriteRenderer>();
         if (renderer == null || renderer.sprite == null)
         {
@@ -143,15 +171,71 @@ public class AsteroidSpawner : MonoBehaviour
         // Decrementar el contador
         asteroidsInScene--;
     }
-
     void IncreaseDifficulty()
     {
         if (GameManager.Instance != null && GameManager.Instance.isGameOver) return;
 
         // Reducir el tiempo de spawn para aumentar la dificultad
         minSpawnTime *= difficultyMultiplier;
-        maxSpawnTime *= difficultyMultiplier;        // Asegurar que no baje del mínimo establecido
+        maxSpawnTime *= difficultyMultiplier;
+
+        // Asegurar que no baje del mínimo establecido
         minSpawnTime = Mathf.Max(minSpawnTime, minSpawnTimeLimit);
         maxSpawnTime = Mathf.Max(maxSpawnTime, minSpawnTime + 0.5f);
+    }
+
+    // Método para normalizar las probabilidades de los tipos de asteroides
+    private void NormalizeAsteroidProbabilities()
+    {
+        float totalChance = smallAsteroidChance + mediumAsteroidChance + largeAsteroidChance;
+
+        if (totalChance <= 0)
+        {
+            // Si todas las probabilidades son 0, usar valores por defecto
+            smallAsteroidChance = 50f;
+            mediumAsteroidChance = 35f;
+            largeAsteroidChance = 15f;
+            totalChance = 100f;
+        }
+
+        // Normalizar a 100%
+        normalizedAsteroidChances = new float[3];
+        normalizedAsteroidChances[0] = smallAsteroidChance / totalChance * 100f;  // Small
+        normalizedAsteroidChances[1] = mediumAsteroidChance / totalChance * 100f; // Medium
+        normalizedAsteroidChances[2] = largeAsteroidChance / totalChance * 100f;  // Large
+    }
+
+    // Método para obtener un tipo de asteroide aleatorio basado en las probabilidades
+    private AsteroidSize GetRandomAsteroidSize()
+    {
+        float randomValue = Random.Range(0f, 100f);
+        float cumulativeChance = 0f;
+
+        // Small Asteroid
+        cumulativeChance += normalizedAsteroidChances[0];
+        if (randomValue <= cumulativeChance)
+            return AsteroidSize.Small;
+
+        // Medium Asteroid
+        cumulativeChance += normalizedAsteroidChances[1];
+        if (randomValue <= cumulativeChance)
+            return AsteroidSize.Medium;
+
+        // Large Asteroid (por defecto si algo sale mal)
+        return AsteroidSize.Large;
+    }
+
+    // Método para asignar sprites globales a un asteroide
+    private void AssignSpritesToAsteroid(AsteroidController controller)
+    {
+        // Solo asignar sprites si están configurados en el spawner
+        if (smallAsteroidSprite != null)
+            controller.smallSprite = smallAsteroidSprite;
+
+        if (mediumAsteroidSprite != null)
+            controller.mediumSprite = mediumAsteroidSprite;
+
+        if (largeAsteroidSprite != null)
+            controller.largeSprite = largeAsteroidSprite;
     }
 }

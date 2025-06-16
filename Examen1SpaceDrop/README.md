@@ -31,7 +31,7 @@
    - Arrastra el panel de Game Over al campo "Game Over UI" del GameManager
    - Como alternativa, puedes añadir el script UISetup a un objeto en la escena para crear automáticamente la UI básica
 
-5. **Configura el generador de asteroides**:
+5. **Configura el generador de asteroides** (ACTUALIZADO):
 
    - Crea un objeto vacío y renómbralo a "AsteroidSpawner"
    - Añade el script AsteroidSpawner al objeto
@@ -42,6 +42,8 @@
      - Script AsteroidController
      - **Importante**: Asigna el tag "Asteroid" a cada prefab
    - Arrastra los prefabs de asteroides al campo "Asteroid Prefabs" del AsteroidSpawner
+   - **NUEVO**: Configura las probabilidades de tamaños de asteroides en el Inspector
+   - **NUEVO**: Opcionalmente, asigna sprites diferentes para cada tamaño de asteroide
 
 6. **Configura el sistema de disparos** (NUEVO):
 
@@ -74,6 +76,31 @@ Asegúrate de tener configurados los siguientes tags en tu proyecto (Edit > Proj
 - "Asteroid" - Para todos los asteroides
 - "PlayerBullet" - Para las balas del jugador
 - "Crystal" - Para todos los cristales
+
+## Sistema de Asteroides Multi-Tamaño
+
+El juego incluye 3 tipos diferentes de asteroides, cada uno con resistencia, tamaño y puntuación distintos:
+
+### Tipos Disponibles:
+
+- **Asteroide Pequeño**: 1 impacto para destruir, 30 puntos (50% probabilidad por defecto)
+- **Asteroide Mediano**: 2 impactos para destruir, 20 puntos (35% probabilidad por defecto)
+- **Asteroide Grande**: 3 impactos para destruir, 10 puntos (15% probabilidad por defecto)
+
+### Mecánica de Daño:
+
+- Los asteroides requieren **múltiples impactos** para ser destruidos
+- Cada bala hace **1 punto de daño**
+- Los asteroides **parpadean en rojo** cuando reciben daño sin ser destruidos
+- Las balas se destruyen al impactar (cada bala puede dañar solo una vez)
+
+### Personalización:
+
+- Las probabilidades se pueden ajustar en el Inspector del AsteroidSpawner
+- Los sprites se pueden configurar para cada tamaño de asteroide
+- Los tamaños y escalas son configurables
+
+Para más detalles, consulta el archivo `ASTEROID_SYSTEM_SETUP.md`.
 
 ## Sistema de Tipos de Cristales
 
@@ -143,7 +170,9 @@ Puedes agregar el script `CrystalStatsUI` para rastrear estadísticas de cristal
 
 - **Movimiento**: Usa las flechas o WASD para mover la nave
 - **Disparos**: Presiona ESPACIO para disparar balas
+- **Asteroides Multi-Tamaño**: 3 tipos de asteroides con diferente resistencia (1-3 impactos)
 - **Colisiones**: Los asteroides destruyen la nave al tocarla
+- **Sistema de Daño**: Los asteroides requieren múltiples impactos y muestran efectos visuales
 - **Puntuación**: Destruye asteroides y cristales para obtener puntos
 - **Cristales**: Diferentes tipos de cristales dan diferentes puntos
 
@@ -151,10 +180,12 @@ Puedes agregar el script `CrystalStatsUI` para rastrear estadísticas de cristal
 
 - ✅ Gestión limpia de fondos (solo sprite personalizado)
 - ✅ Sistema de disparos con balas
+- ✅ Asteroides multi-tamaño con sistema de resistencia/daño
 - ✅ Spawning inteligente de asteroides y cristales
 - ✅ Múltiples tipos de cristales con diferentes valores
 - ✅ Sistema de puntuación
-- ✅ Detección de colisiones
+- ✅ Detección de colisiones avanzada
+- ✅ Efectos visuales de daño (parpadeo rojo)
 - ✅ UI básica con puntuación y game over
 - ✅ Sistema de estadísticas opcional
 
