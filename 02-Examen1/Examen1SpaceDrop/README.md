@@ -1,4 +1,73 @@
-# Instrucciones para configurar el juego Space Drop
+# Space Drop 🚀
+
+### Un juego arcade de supervivencia espacial desarrollado en Unity
+
+[![Unity Version](https://img.shields.io/badge/Unity-2022.3+-blue.svg)](https://unity3d.com/get-unity/download)
+[![Platform](https://img.shields.io/badge/Platform-PC-lightgrey.svg)](https://github.com)
+[![Genre](https://img.shields.io/badge/Genre-Arcade%20Shooter-orange.svg)](https://github.com)
+[![Status](https://img.shields.io/badge/Status-Complete-brightgreen.svg)](https://github.com)
+
+---
+
+## 📖 Descripción
+
+**Space Drop** es un juego arcade de shoot 'em up donde controlas una nave espacial que debe sobrevivir a una lluvia constante de asteroides mientras recolecta cristales valiosos. Con mecánicas clásicas modernizadas, sistema de vidas múltiples, y progresión de dificultad adaptativa, ofrece una experiencia adictiva y desafiante.
+
+### 🎯 Características Principales
+
+- ✅ **Sistema de vidas múltiples** (4 vidas con respawn automático)
+- ✅ **Asteroides multi-tamaño** con diferentes resistencias (1-3 impactos)
+- ✅ **Cristales de valor variable** con sistema de rareza (4 tipos)
+- ✅ **UI completa** con menús, pausado, y navegación
+- ✅ **Puntuación persistente** con high scores guardados
+- ✅ **Audio integrado** (música de fondo y efectos de sonido)
+- ✅ **Progresión de dificultad** que aumenta gradualmente
+- ✅ **Arquitectura modular** y código escalable
+
+---
+
+## 🎮 Cómo Jugar
+
+### Controles
+
+| Acción         | Control            | Descripción                    |
+| -------------- | ------------------ | ------------------------------ |
+| **Movimiento** | `WASD` o `Flechas` | Mover la nave en 8 direcciones |
+| **Disparar**   | `Espacio`          | Disparar proyectiles           |
+| **Pausar**     | `ESC`              | Pausar/reanudar el juego       |
+| **Menús**      | `Clic ratón`       | Navegar por botones            |
+
+### Objetivo
+
+🏆 **Obtén la puntuación más alta** sobreviviendo ondas de asteroides y recolectando cristales.
+
+### Mecánicas de Juego
+
+#### 🪨 Asteroides
+
+- **Pequeños**: 1 impacto → 30 puntos (50% probabilidad)
+- **Medianos**: 2 impactos → 20 puntos (35% probabilidad)
+- **Grandes**: 3 impactos → 10 puntos (15% probabilidad)
+- Los asteroides parpadean en rojo al recibir daño
+- Colisionar con asteroides resta 1 vida
+
+#### 💎 Cristales
+
+- **Amarillo**: 50 pts (disparo) / 25 pts (contacto) - 50% probabilidad
+- **Azul**: 75 pts (disparo) / 37 pts (contacto) - 30% probabilidad
+- **Rojo**: 100 pts (disparo) / 50 pts (contacto) - 15% probabilidad
+- **Verde**: 150 pts (disparo) / 75 pts (contacto) - 5% probabilidad
+
+#### ❤️ Sistema de Vidas
+
+- Comienzas con **4 vidas**
+- Cada colisión con asteroide resta 1 vida
+- Respawn automático si tienes vidas restantes (2 segundos)
+- Game Over al agotar todas las vidas
+
+---
+
+## 🛠️ Instalación y Configuración
 
 ## Configuración Básica
 
@@ -78,6 +147,63 @@ Asegúrate de tener configurados los siguientes tags en tu proyecto (Edit > Proj
 - "Asteroid" - Para todos los asteroides
 - "PlayerBullet" - Para las balas del jugador
 - "Crystal" - Para todos los cristales
+
+---
+
+## 🏗️ Estructura del Proyecto
+
+### 📁 Organización de Scripts
+
+El proyecto está organizado en una estructura clara y modular:
+
+```
+Assets/Scripts/
+├── 📁 Managers/           # Gestión del juego
+│   ├── GameManager.cs     # Manager principal del juego
+│   ├── MenuManager.cs     # Gestión de menús
+│   └── GameStateManager.cs # Control de estados
+│
+├── 📁 Entities/           # Entidades del juego
+│   ├── PlayerController.cs    # Control del jugador
+│   ├── AsteroidController.cs  # Control de asteroides
+│   ├── CrystalController.cs   # Control de cristales
+│   └── BulletController.cs    # Control de proyectiles
+│
+├── 📁 Spawners/           # Sistemas de generación
+│   ├── AsteroidSpawner.cs # Generador de asteroides
+│   └── CrystalSpawner.cs  # Generador de cristales
+│
+├── 📁 UI/                 # Interfaz de usuario
+│   ├── UISetup.cs         # Configuración de UI
+│   ├── CrystalStatsUI.cs  # Estadísticas de cristales
+│   └── GameUIInitializer.cs # Inicialización de UI
+│
+├── 📁 Initialization/     # Scripts de inicialización
+│   ├── GameInitializer.cs  # Inicialización del juego
+│   └── InitializeGame.cs   # Configuración inicial
+│
+└── 📁 Utils/              # Utilidades y herramientas
+    └── BackgroundSetup.cs # Configuración del fondo
+```
+
+### 🔧 Componentes Principales
+
+#### 🎮 Managers
+- **GameManager**: Control principal del juego, puntuación, vidas, audio
+- **MenuManager**: Navegación entre menús y pantallas
+- **GameStateManager**: Control de estados del juego (jugando, pausado, game over)
+
+#### 🚀 Entities
+- **PlayerController**: Movimiento, disparos, colisiones del jugador
+- **AsteroidController**: Comportamiento y resistencia de asteroides
+- **CrystalController**: Tipos de cristales y valores de puntuación
+- **BulletController**: Movimiento y colisiones de proyectiles
+
+#### 🎯 Spawners
+- **AsteroidSpawner**: Generación automática de asteroides con dificultad progresiva
+- **CrystalSpawner**: Generación de cristales con probabilidades configurables
+
+---
 
 ## Sistema de Asteroides Multi-Tamaño
 
