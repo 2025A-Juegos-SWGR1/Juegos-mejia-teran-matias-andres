@@ -96,5 +96,6 @@ public class CrystalStatsUI : MonoBehaviour
         }
 
         if (totalPointsFromCrystalsText != null)
-            totalPointsFromCrystalsText.text = $"Puntos por cristales: {totalPointsFromCrystals}";    }
+            totalPointsFromCrystalsText.text = $"Puntos por cristales: {totalPointsFromCrystals}";
+    }
 }

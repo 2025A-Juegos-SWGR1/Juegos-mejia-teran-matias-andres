@@ -231,5 +231,6 @@ public class CrystalController : MonoBehaviour
                 // Si no hay sprite específico, usar el color para colorear el sprite actual
                 spriteRenderer.color = fallbackColor;
             }
-        }    }
+        }
+    }
 }
