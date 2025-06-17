@@ -96,54 +96,5 @@ public class CrystalStatsUI : MonoBehaviour
         }
 
         if (totalPointsFromCrystalsText != null)
-            totalPointsFromCrystalsText.text = $"Puntos por cristales: {totalPointsFromCrystals}";
-    }
-
-    // Método para resetear las estadísticas
-    public void ResetStats()
-    {
-        yellowCrystalsDestroyed = 0;
-        blueCrystalsDestroyed = 0;
-        redCrystalsDestroyed = 0;
-        greenCrystalsDestroyed = 0;
-        totalPointsFromCrystals = 0;
-        UpdateUI();
-    }
-
-    // Métodos para obtener estadísticas
-    public int GetCrystalCount(CrystalType type)
-    {
-        switch (type)
-        {
-            case CrystalType.Yellow: return yellowCrystalsDestroyed;
-            case CrystalType.Blue: return blueCrystalsDestroyed;
-            case CrystalType.Red: return redCrystalsDestroyed;
-            case CrystalType.Green: return greenCrystalsDestroyed;
-            default: return 0;
-        }
-    }
-
-    public int GetTotalCrystals()
-    {
-        return yellowCrystalsDestroyed + blueCrystalsDestroyed + redCrystalsDestroyed + greenCrystalsDestroyed;
-    }
-
-    public int GetTotalPointsFromCrystals()
-    {
-        return totalPointsFromCrystals;
-    }
-
-    // Método para mostrar un resumen en la consola
-    [ContextMenu("Show Crystal Stats")]
-    public void ShowStats()
-    {
-        Debug.Log("=== ESTADÍSTICAS DE CRISTALES ===");
-        Debug.Log($"Cristales Amarillos destruidos: {yellowCrystalsDestroyed}");
-        Debug.Log($"Cristales Azules destruidos: {blueCrystalsDestroyed}");
-        Debug.Log($"Cristales Rojos destruidos: {redCrystalsDestroyed}");
-        Debug.Log($"Cristales Verdes destruidos: {greenCrystalsDestroyed}");
-        Debug.Log($"Total de cristales: {GetTotalCrystals()}");
-        Debug.Log($"Total de puntos por cristales: {totalPointsFromCrystals}");
-        Debug.Log("================================");
-    }
+            totalPointsFromCrystalsText.text = $"Puntos por cristales: {totalPointsFromCrystals}";    }
 }

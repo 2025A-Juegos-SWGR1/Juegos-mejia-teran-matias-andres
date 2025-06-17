@@ -373,38 +373,7 @@ public class GameManager : MonoBehaviour
         {
             musicAudioSource.UnPause();
         }
-    }
-
-    public void StopMusic()
-    {
-        if (musicAudioSource != null)
-        {
-            musicAudioSource.Stop();
-        }
-    }
-
-    public void SetMusicVolume(float volume)
-    {
-        if (musicAudioSource != null)
-        {
-            musicAudioSource.volume = Mathf.Clamp01(volume);
-        }
-    }
-    // Método público para obtener la puntuación actual
-    public int GetScore()
-    {
-        return score;
-    }
-
-    // Método público para reiniciar las estadísticas del juego (llamado desde el menú)
-    public void ResetStats()
-    {
-        PlayerPrefs.DeleteKey(HIGH_SCORE_KEY);
-        PlayerPrefs.Save();
-        highScore = 0;
-        UpdateHighScoreUI();
-        Debug.Log("Estadísticas del juego reiniciadas");
-    }    // Método para reiniciar las variables del juego
+    }// Método para reiniciar las variables del juego
     public void ResetGame()
     {
         try
@@ -442,39 +411,12 @@ public class GameManager : MonoBehaviour
         {
             menuManager.UpdateLives(currentLives);
         }
-    }
-
-    // Métodos públicos para el sistema de vidas
-    public int GetCurrentLives()
-    {
-        return currentLives;
-    }
-
-    public int GetMaxLives()
-    {
-        return maxLives;
-    }
-
-    public bool IsPlayerRespawning()
-    {
-        return isPlayerRespawning;
-    }    // Método para configurar el prefab del jugador (llamado desde el jugador en Start)
+    }// Método para configurar el prefab del jugador (llamado desde el jugador en Start)
     public void SetPlayerPrefab(GameObject prefab, Vector3 spawnPos)
     {
         playerPrefab = prefab;
         playerSpawnPosition = spawnPos;
         Debug.Log($"SetPlayerPrefab() llamado. Prefab: {prefab?.name}, Posición: {spawnPos}");
         Debug.Log($"playerPrefab configurado correctamente: {playerPrefab != null}");
-    }
-
-    // Método para agregar vidas (power-up futuro)
-    public void AddLife()
-    {
-        if (currentLives < maxLives)
-        {
-            currentLives++;
-            UpdateLivesUI();
-            Debug.Log($"Vida extra! Vidas actuales: {currentLives}");
-        }
     }
 }

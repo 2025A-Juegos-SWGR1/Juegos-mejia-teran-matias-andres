@@ -231,18 +231,5 @@ public class CrystalController : MonoBehaviour
                 // Si no hay sprite específico, usar el color para colorear el sprite actual
                 spriteRenderer.color = fallbackColor;
             }
-        }
-    }
-
-    // Método público para obtener el tipo de cristal
-    public CrystalType GetCrystalType()
-    {
-        return crystalType;
-    }
-
-    // Método público para obtener el valor de puntos
-    public int GetPointValue()
-    {
-        return pointValue;
-    }
+        }    }
 }

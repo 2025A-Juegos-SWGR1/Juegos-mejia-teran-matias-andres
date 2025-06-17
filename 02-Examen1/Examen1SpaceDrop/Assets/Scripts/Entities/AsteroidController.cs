@@ -261,29 +261,7 @@ public class AsteroidController : MonoBehaviour
             spriteRenderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
 
-            // Volver al color original
-            spriteRenderer.color = originalColor;
+            // Volver al color original            spriteRenderer.color = originalColor;
         }
-    }
-
-    // Métodos públicos para obtener información del asteroide
-    public AsteroidSize GetAsteroidSize()
-    {
-        return asteroidSize;
-    }
-
-    public int GetCurrentHealth()
-    {
-        return currentHealth;
-    }
-
-    public int GetMaxHealth()
-    {
-        return maxHealth;
-    }
-
-    public int GetPointValue()
-    {
-        return pointValue;
     }
 }

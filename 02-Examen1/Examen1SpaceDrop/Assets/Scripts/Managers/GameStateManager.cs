@@ -154,26 +154,14 @@ public class GameStateManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-
-    // Métodos de utilidad
+    }    // Métodos de utilidad
     public bool IsInGame()
     {
         return currentState == GameState.Playing;
     }
 
-    public bool IsInMenu()
-    {
-        return currentState == GameState.MainMenu;
-    }
-
     public bool IsPaused()
     {
         return currentState == GameState.Paused;
-    }
-
-    public bool IsGameOver()
-    {
-        return currentState == GameState.GameOver;
     }
 }

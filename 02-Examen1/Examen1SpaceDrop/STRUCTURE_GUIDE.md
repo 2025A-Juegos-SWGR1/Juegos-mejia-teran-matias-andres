@@ -1,235 +1,280 @@
-# 📁 Guía de Estructura Organizada - Space Drop
+# 🎬 Guion para Video: "Space Drop - Explicación del Código"
 
-## 🎯 Objetivo
-
-Esta guía explica la nueva estructura organizativa del proyecto Space Drop, diseñada para ser más **limpia**, **modular** y **fácil de mantener**.
+**Duración estimada**: 8-10 minutos  
+**Objetivo**: Explicar la arquitectura y sistemas principales del juego de forma concisa y técnica
 
 ---
 
-## 📋 Estructura Anterior vs Nueva
+## 📝 INTRODUCCIÓN (30 segundos)
 
-### ❌ Estructura Anterior (Desorganizada)
+**[PANTALLA: Logo/Título del juego]**
+
+"¡Hola! Hoy te voy a explicar el código detrás de **Space Drop**, un juego arcade de supervivencia espacial desarrollado en Unity. En menos de 10 minutos veremos la arquitectura, los sistemas principales y las decisiones técnicas que hacen funcionar este juego."
+
+**[MOSTRAR: Gameplay rápido - nave, asteroides, cristales, UI]**
+
+"Como puedes ver, tenemos una nave que dispara a asteroides de diferentes tamaños, recolecta cristales, y cuenta con un sistema completo de UI, audio y puntuación persistente."
+
+---
+
+## 🏗️ ARQUITECTURA GENERAL (90 segundos)
+
+**[PANTALLA: Project window mostrando estructura de carpetas]**
+
+"Empezemos con la arquitectura. El proyecto está organizado en módulos claros:"
+
+### **Scripts Core**
+
+**[MOSTRAR: GameManager.cs]**
+
+- "**GameManager**: El cerebro del juego. Singleton que controla puntuación, vidas, y estados generales"
+- "**GameStateManager**: Maneja los 4 estados del juego - MainMenu, Playing, Paused, GameOver"
+- "**GameUIInitializer**: Sistema de inicialización automática que crea toda la UI necesaria"
+
+### **Player System**
+
+**[MOSTRAR: PlayerController.cs]**
+
+- "**PlayerController**: Movimiento WASD, disparo con Espacio, respeta estados del juego"
+- "**BulletController**: Proyectiles simples que se destruyen al impactar"
+
+### **Enemy System**
+
+**[MOSTRAR: AsteroidController.cs y AsteroidSpawner.cs]**
+
+- "**AsteroidController**: 3 tipos de asteroides con 1, 2 o 3 puntos de vida"
+- "**AsteroidSpawner**: Generación procedural con dificultad progresiva"
+
+### **Collectibles**
+
+**[MOSTRAR: CrystalController.cs]**
+
+- "**CrystalController**: 4 tipos de cristales con diferentes valores y probabilidades"
+- "Sistema de rareza: Amarillo 50%, Azul 30%, Rojo 15%, Verde 5%"
+
+---
+
+## 🔧 SISTEMAS PRINCIPALES (3 minutos)
+
+### **1. Sistema de Estados (45 segundos)**
+
+**[MOSTRAR: GameStateManager.cs - enum GameState]**
+
+```csharp
+public enum GameState {
+    MainMenu, Playing, Paused, GameOver
+}
 ```
-Assets/Scripts/
-├── GameManager.cs
-├── MenuManager.cs
-├── GameStateManager.cs
-├── PlayerController.cs
-├── AsteroidController.cs
-├── CrystalController.cs
-├── BulletController.cs
-├── AsteroidSpawner.cs
-├── CrystalSpawner.cs
-├── UISetup.cs
-├── CrystalStatsUI.cs
-├── GameUIInitializer.cs
-├── GameInitializer.cs
-├── InitializeGame.cs
-├── BackgroundSetup.cs
-└── ... (todos los archivos mezclados)
+
+"El GameStateManager controla automáticamente el flujo del juego:"
+
+- "En menús: Time.timeScale = 0, spawners desactivados, input bloqueado"
+- "Durante juego: Time.timeScale = 1, todo activo"
+- "Transiciones automáticas entre estados"
+
+### **2. Sistema de Vidas y Respawn (60 segundos)**
+
+**[MOSTRAR: GameManager.cs - método PlayerDied()]**
+
+```csharp
+public void PlayerDied() {
+    currentLives--;
+    if (currentLives <= 0) {
+        GameOver();
+    } else {
+        StartCoroutine(RespawnPlayer());
+    }
+}
 ```
 
-### ✅ Estructura Nueva (Organizada)
+"Mecánica de 4 vidas:"
+
+- "Cada colisión con asteroide resta 1 vida"
+- "Respawn automático tras 2 segundos si quedan vidas"
+- "Game Over solo cuando se agotan todas las vidas"
+- "El sistema recrea dinámicamente el prefab del jugador"
+
+### **3. Sistema de Spawning Inteligente (75 segundos)**
+
+**[MOSTRAR: AsteroidSpawner.cs - método Update() y SpawnAsteroid()]**
+
+"Los spawners respetan el estado del juego:"
+
+```csharp
+void Update() {
+    if (!gameStateManager.IsInGame()) return;
+    // Solo spawner cuando estamos jugando
+}
 ```
-Assets/Scripts/
-├── 📁 Managers/           # Todo lo relacionado con gestión del juego
-├── 📁 Entities/           # Todos los objetos del juego
-├── 📁 Spawners/           # Sistemas de generación
-├── 📁 UI/                 # Interfaz de usuario
-├── 📁 Initialization/     # Scripts de inicialización
-└── 📁 Utils/              # Herramientas y utilidades
+
+"Dificultad progresiva:"
+
+- "Factor de 0.95 reduce el tiempo entre spawns cada X segundos"
+- "Probabilidades configurables por tipo de asteroide"
+- "Límite mínimo para mantener jugabilidad"
+
+---
+
+## 🎵 SISTEMA DE AUDIO (60 segundos)
+
+**[MOSTRAR: GameManager.cs y MenuManager.cs - campos de audio]**
+
+"Sistema de audio dual:"
+
+- "**GameManager**: Música de fondo que se pausa/reanuda automáticamente"
+- "**MenuManager**: Efectos de UI y sonidos de botones"
+
+```csharp
+// Música que respeta estados del juego
+if (gameStateManager.IsInGame()) {
+    musicAudioSource.Play();
+} else {
+    musicAudioSource.Pause();
+}
 ```
 
----
-
-## 📁 Descripción de Carpetas
-
-### 🎮 Managers/
-**Propósito**: Controla la lógica principal del juego
-- `GameManager.cs` - Manager principal (puntuación, vidas, audio)
-- `MenuManager.cs` - Control de menús y navegación
-- `GameStateManager.cs` - Estados del juego (jugando, pausado, game over)
-
-### 🚀 Entities/
-**Propósito**: Entidades que interactúan en el juego
-- `PlayerController.cs` - Control del jugador (movimiento, disparos)
-- `AsteroidController.cs` - Comportamiento de asteroides
-- `CrystalController.cs` - Comportamiento de cristales
-- `BulletController.cs` - Comportamiento de proyectiles
-
-### 🎯 Spawners/
-**Propósito**: Sistemas que generan objetos en el juego
-- `AsteroidSpawner.cs` - Generación de asteroides
-- `CrystalSpawner.cs` - Generación de cristales
-
-### 🖥️ UI/
-**Propósito**: Todo lo relacionado con la interfaz de usuario
-- `UISetup.cs` - Configuración automática de UI
-- `CrystalStatsUI.cs` - Estadísticas de cristales
-- `GameUIInitializer.cs` - Inicialización de elementos UI
-
-### 🔧 Initialization/
-**Propósito**: Scripts que configuran el juego al inicio
-- `GameInitializer.cs` - Inicialización principal
-- `InitializeGame.cs` - Configuración inicial alternativa
-
-### 🛠️ Utils/
-**Propósito**: Utilidades y herramientas auxiliares
-- `BackgroundSetup.cs` - Configuración del fondo
+"AudioSources separados para música y efectos, control automático según estado del juego"
 
 ---
 
-## 🔄 Migración Realizada
+## 💾 PERSISTENCIA Y UI (90 segundos)
 
-### Archivos Movidos:
+### **Sistema de High Score (45 segundos)**
 
-#### De Raíz → Managers/
-- ✅ `GameManager.cs`
-- ✅ `MenuManager.cs`
-- ✅ `GameStateManager.cs`
+**[MOSTRAR: GameManager.cs - SaveHighScore()]**
 
-#### De Raíz → Entities/
-- ✅ `PlayerController.cs`
-- ✅ `AsteroidController.cs`
-- ✅ `CrystalController.cs`
-- ✅ `BulletController.cs`
+```csharp
+private void SaveHighScore() {
+    PlayerPrefs.SetInt(HIGH_SCORE_KEY, highScore);
+    PlayerPrefs.Save();
+}
+```
 
-#### De Raíz → Spawners/
-- ✅ `AsteroidSpawner.cs`
-- ✅ `CrystalSpawner.cs`
+"Puntuación persistente:"
 
-#### De Raíz → UI/
-- ✅ `UISetup.cs`
-- ✅ `CrystalStatsUI.cs`
-- ✅ `GameUIInitializer.cs`
+- "Usa PlayerPrefs de Unity para guardar entre sesiones"
+- "Verificación automática de nuevo récord en cada punto"
+- "Mostrado en tiempo real en todas las pantallas"
 
-#### De Raíz → Initialization/
-- ✅ `GameInitializer.cs`
-- ✅ `InitializeGame.cs`
+### **UI Automática (45 segundos)**
 
-#### De Raíz → Utils/
-- ✅ `BackgroundSetup.cs`
+**[MOSTRAR: GameUIInitializer.cs - CreateUI()]**
 
----
+"El GameUIInitializer crea automáticamente:"
 
-## 🚀 Beneficios de la Nueva Estructura
-
-### 1. **🔍 Fácil Localización**
-- Sabes exactamente dónde buscar cada tipo de script
-- No más búsquedas entre docenas de archivos mezclados
-
-### 2. **📚 Mejor Organización Mental**
-- Categorización lógica por funcionalidad
-- Estructura modular y escalable
-
-### 3. **👥 Trabajo en Equipo**
-- Diferentes desarrolladores pueden trabajar en carpetas específicas
-- Menos conflictos en control de versiones
-
-### 4. **🔧 Mantenimiento Simplificado**
-- Cambios en UI solo afectan la carpeta UI
-- Modificaciones de entidades están isoladas
-- Debugging más eficiente
-
-### 5. **📈 Escalabilidad**
-- Fácil añadir nuevos scripts en la categoría correcta
-- Preparado para crecimiento del proyecto
+- "Canvas con configuración correcta"
+- "Textos de puntuación y vidas con anclajes apropiados"
+- "Paneles de menú con botones funcionales"
+- "Todo con una sola llamada en Start()"
 
 ---
 
-## 🎯 Reglas de Organización
+## ⚡ OPTIMIZACIONES Y ROBUSTEZ (90 segundos)
 
-### ✅ Qué va en cada carpeta:
+### **Gestión de Memoria (30 segundos)**
 
-#### Managers/
-- Scripts que controlan el estado global
-- Singletons y managers principales
-- Control de flujo del juego
+**[MOSTRAR: AsteroidController.cs - destrucción automática]**
 
-#### Entities/
-- Scripts que se añaden a GameObjects
-- Comportamientos de objetos del juego
-- Controladores de entidades
+- "Destrucción automática al salir de pantalla"
+- "Límites de elementos simultáneos"
+- "Pooling implícito mediante instanciación controlada"
 
-#### Spawners/
-- Scripts que generan/instancian objetos
-- Sistemas de creación automática
-- Pool de objetos
+### **Manejo de Errores (30 segundos)**
 
-#### UI/
-- Scripts relacionados con Canvas
-- Controladores de elementos UI
-- Sistemas de menús y HUD
+**[MOSTRAR: BackgroundSetup.cs - IsTagDefined()]**
 
-#### Initialization/
-- Scripts que se ejecutan al inicio
-- Configuraciones iniciales
-- Setup automático
+```csharp
+private bool IsTagDefined(string tagName) {
+    // Verificación segura de existencia de tags
+}
+```
 
-#### Utils/
-- Herramientas auxiliares
-- Scripts reutilizables
-- Funciones de utilidad
+- "Verificación de componentes antes de usar"
+- "Manejo de tags faltantes"
+- "Sistemas de respaldo para funcionalidades críticas"
 
-### ❌ Qué NO hacer:
-- No mezclar tipos diferentes en una carpeta
-- No poner scripts UI en Entities
-- No poner lógica de juego en Utils
+### **Arquitectura Modular (30 segundos)**
+
+- "Patrón Singleton para managers"
+- "Separación clara de responsabilidades"
+- "Fácil extensión sin modificar código existente"
 
 ---
 
-## 🔍 Cómo Encontrar Scripts Rápidamente
+## 🎯 MECÁNICAS DE BALANCE (60 segundos)
 
-### Por Funcionalidad:
-- **Quiero modificar la puntuación** → `Managers/GameManager.cs`
-- **Quiero cambiar el movimiento del jugador** → `Entities/PlayerController.cs`
-- **Quiero ajustar la generación de asteroides** → `Spawners/AsteroidSpawner.cs`
-- **Quiero modificar la UI** → `UI/UISetup.cs`
+### **Ecuación de Dificultad**
 
-### Por Problema:
-- **El juego no inicia correctamente** → `Initialization/`
-- **Los menús no funcionan** → `UI/` y `Managers/MenuManager.cs`
-- **Los objetos no aparecen** → `Spawners/`
-- **Las colisiones fallan** → `Entities/`
+**[MOSTRAR: AsteroidSpawner.cs - IncreaseDifficulty()]**
 
----
+"Balance inteligente:"
 
-## 🛡️ Compatibilidad
+- "Asteroides más resistentes dan menos puntos (incentiva estrategia)"
+- "Cristales raros valen más pero aparecen menos"
+- "Dificultad aumenta gradualmente sin volverse imposible"
 
-### ✅ No se Rompió Nada
-- Unity actualiza automáticamente las referencias
-- Los prefabs siguen funcionando
-- La funcionalidad es idéntica
+### **Sistema de Puntuación**
 
-### 🔧 Si Hay Problemas:
-1. **Scripts no encontrados**: Unity regenerará los .meta
-2. **Referencias perdidas**: Reasignar en el Inspector
-3. **Errores de compilación**: Verificar que todos los archivos se movieron
+- "Asteroides: 30pts (pequeño), 20pts (mediano), 10pts (grande)"
+- "Cristales: 50-150pts según rareza"
+- "Doble valor al disparar vs. recolectar por contacto"
 
 ---
 
-## 📝 Recomendaciones para el Futuro
+## 🚀 CONCLUSIÓN (30 segundos)
 
-### Al Añadir Nuevos Scripts:
-1. **Pregúntate**: ¿Qué hace este script?
-2. **Categoriza**: ¿Es Manager, Entity, Spawner, UI, etc.?
-3. **Coloca**: En la carpeta correspondiente
-4. **Nombra**: De forma clara y descriptiva
+**[PANTALLA: Código completo del proyecto]**
 
-### Ejemplos de Nuevos Scripts:
-- `PowerUpController.cs` → `Entities/`
-- `LevelManager.cs` → `Managers/`
-- `HealthBarUI.cs` → `UI/`
-- `ParticlePooler.cs` → `Utils/`
+"En resumen, **Space Drop** implementa:"
+
+- "✅ Arquitectura modular con Singleton Managers"
+- "✅ Sistemas automáticos de UI y audio"
+- "✅ Persistencia de datos y balance inteligente"
+- "✅ Código robusto con manejo de errores"
+
+"**2,500 líneas de C#** organizadas en **15 scripts principales** que crean una experiencia de juego completa y escalable."
+
+**[MOSTRAR: Gameplay final rápido]**
+
+"¡Eso es todo! Un juego arcade completo con todas las características que esperarías de un título profesional. ¡Gracias por ver!"
 
 ---
 
-## 🎉 Conclusión
+## 📋 NOTAS PARA EL VIDEO
 
-La nueva estructura organizada de Space Drop facilita:
-- ✅ **Desarrollo más rápido**
-- ✅ **Mantenimiento simplificado**
-- ✅ **Colaboración en equipo**
-- ✅ **Crecimiento del proyecto**
+### **Preparación**:
 
-¡Tu código ahora está más ordenado y profesional! 🚀
+- Tener Unity abierto con el proyecto
+- Mostrar estructura de carpetas claramente
+- Preparar snippets de código clave
+- Tener gameplay grabado para mostrar
+
+### **Tiempo por Sección**:
+
+- Intro: 30s
+- Arquitectura: 90s
+- Sistemas: 180s
+- Audio: 60s
+- UI/Persistencia: 90s
+- Optimización: 90s
+- Balance: 60s
+- Conclusión: 30s
+- **Total: 8.5 minutos**
+
+### **Elementos Visuales**:
+
+- Alternar entre código y gameplay
+- Resaltar líneas importantes de código
+- Mostrar inspector de Unity cuando sea relevante
+- Usar zoom en secciones críticas del código
+
+### **Ritmo**:
+
+- Explicación técnica pero accesible
+- No leer código completo, solo conceptos clave
+- Enfocarse en decisiones de diseño y arquitectura
+- Mantener energía constante
+
+---
+
+_¡Este guion te dará un video técnico pero dinámico que muestra la profesionalidad del código desarrollado!_

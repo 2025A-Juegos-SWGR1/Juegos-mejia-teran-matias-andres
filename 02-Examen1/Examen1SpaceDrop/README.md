@@ -189,17 +189,20 @@ Assets/Scripts/
 ### 🔧 Componentes Principales
 
 #### 🎮 Managers
+
 - **GameManager**: Control principal del juego, puntuación, vidas, audio
 - **MenuManager**: Navegación entre menús y pantallas
 - **GameStateManager**: Control de estados del juego (jugando, pausado, game over)
 
 #### 🚀 Entities
+
 - **PlayerController**: Movimiento, disparos, colisiones del jugador
 - **AsteroidController**: Comportamiento y resistencia de asteroides
 - **CrystalController**: Tipos de cristales y valores de puntuación
 - **BulletController**: Movimiento y colisiones de proyectiles
 
 #### 🎯 Spawners
+
 - **AsteroidSpawner**: Generación automática de asteroides con dificultad progresiva
 - **CrystalSpawner**: Generación de cristales con probabilidades configurables
 
