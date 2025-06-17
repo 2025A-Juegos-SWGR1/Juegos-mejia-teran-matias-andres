@@ -363,6 +363,8 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   fireRate: 0.3
   shootSound: {fileID: 8300000, guid: ee1a77314755a8942b2ba3e56b5485a1, type: 3}
+  explosionPrefab: {fileID: 6373708922770581868, guid: 12fa0a551e92ede4fbc775ff94621b9d, type: 3}
+  explosionSound: {fileID: 8300000, guid: 703130a717faac04084739c9fdd2dade, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

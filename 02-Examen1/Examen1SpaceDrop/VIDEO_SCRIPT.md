@@ -1,84 +1,95 @@
 # 🎬 Guion para Video: "Space Drop - Explicación del Código"
 
-**Duración estimada**: 8-10 minutos  
-**Objetivo**: Explicar la arquitectura y sistemas principales del juego de forma concisa y técnica
+**Duración estimada**: 9-11 minutos  
+**Objetivo**: Explicar la arquitectura moderna, sistemas optimizados y código limpio del juego
 
 ---
 
-## 📝 INTRODUCCIÓN (30 segundos)
+## 📝 INTRODUCCIÓN (45 segundos)
 
-**[PANTALLA: Logo/Título del juego]**
+**[PANTALLA: Logo/Título del juego + estructura de carpetas]**
 
-"¡Hola! Hoy te voy a explicar el código detrás de **Space Drop**, un juego arcade de supervivencia espacial desarrollado en Unity. En menos de 10 minutos veremos la arquitectura, los sistemas principales y las decisiones técnicas que hacen funcionar este juego."
+"¡Hola! Hoy te voy a explicar **Space Drop**, un arcade espacial desarrollado en Unity con una arquitectura moderna y código completamente optimizado. Veremos cómo **15 scripts principales** trabajando en **arquitectura modular** crean una experiencia de juego robusta y escalable."
 
-**[MOSTRAR: Gameplay rápido - nave, asteroides, cristales, UI]**
+**[MOSTRAR: Gameplay rápido - nave, asteroides multi-tamaño, cristales coloridos, UI automática]**
 
-"Como puedes ver, tenemos una nave que dispara a asteroides de diferentes tamaños, recolecta cristales, y cuenta con un sistema completo de UI, audio y puntuación persistente."
-
----
-
-## 🏗️ ARQUITECTURA GENERAL (90 segundos)
-
-**[PANTALLA: Project window mostrando estructura de carpetas]**
-
-"Empezemos con la arquitectura. El proyecto está organizado en módulos claros:"
-
-### **Scripts Core**
-
-**[MOSTRAR: GameManager.cs]**
-
-- "**GameManager**: El cerebro del juego. Singleton que controla puntuación, vidas, y estados generales"
-- "**GameStateManager**: Maneja los 4 estados del juego - MainMenu, Playing, Paused, GameOver"
-- "**GameUIInitializer**: Sistema de inicialización automática que crea toda la UI necesaria"
-
-### **Player System**
-
-**[MOSTRAR: PlayerController.cs]**
-
-- "**PlayerController**: Movimiento WASD, disparo con Espacio, respeta estados del juego"
-- "**BulletController**: Proyectiles simples que se destruyen al impactar"
-
-### **Enemy System**
-
-**[MOSTRAR: AsteroidController.cs y AsteroidSpawner.cs]**
-
-- "**AsteroidController**: 3 tipos de asteroides con 1, 2 o 3 puntos de vida"
-- "**AsteroidSpawner**: Generación procedural con dificultad progresiva"
-
-### **Collectibles**
-
-**[MOSTRAR: CrystalController.cs]**
-
-- "**CrystalController**: 4 tipos de cristales con diferentes valores y probabilidades"
-- "Sistema de rareza: Amarillo 50%, Azul 30%, Rojo 15%, Verde 5%"
+"Este juego implementa mecánicas avanzadas: asteroides con múltiples puntos de vida, sistema de respawn automático, 4 tipos de cristales con diferentes valores, UI completamente automatizada, y una arquitectura basada en **managers singleton** que garantiza escalabilidad y mantenimiento limpio."
 
 ---
 
-## 🔧 SISTEMAS PRINCIPALES (3 minutos)
+## 🏗️ ARQUITECTURA MODERNA (2 minutos)
 
-### **1. Sistema de Estados (45 segundos)**
+**[PANTALLA: Project window mostrando estructura de carpetas organizada]**
 
-**[MOSTRAR: GameStateManager.cs - enum GameState]**
+"La arquitectura está diseñada para **máxima modularidad y mantenimiento**:"
+
+### **📁 Managers - Sistemas Centrales**
+
+**[MOSTRAR: GameManager.cs con patrón Singleton]**
+
+- "**GameManager**: Singleton con `GetInstance()` que maneja puntuación, vidas, audio dual, y persistencia"
+- "**GameStateManager**: Control de 4 estados (MainMenu, Playing, Paused, GameOver) con Time.timeScale automático"
+- "**MenuManager**: Sistema de navegación completa con creación automática de paneles y manejo de eventos"
+
+### **📁 Entities - Entidades del Juego**
+
+**[MOSTRAR: AsteroidController.cs con enum AsteroidSize]**
+
+- "**AsteroidController**: 3 tipos con sistema de salud (Small=1HP, Medium=2HP, Large=3HP), efectos visuales de daño"
+- "**CrystalController**: 4 tipos con probabilidades configurables y valores dinámicos (50-150 puntos)"
+- "**PlayerController**: Movimiento, disparo, respawn automático con verificación de estados del juego"
+- "**BulletController**: Proyectiles con detección inteligente de colisiones y autodestrucción"
+
+### **📁 UI - Interfaz Automatizada**
+
+**[MOSTRAR: GameUIInitializer.cs]**
+
+- "**GameUIInitializer**: Crea automáticamente toda la UI con una sola línea de código"
+- "**MenuManager**: Paneles dinámicos, botones con eventos, elementos responsivos"
+- "**CrystalStatsUI**: Sistema opcional de estadísticas en tiempo real"
+
+### **📁 Initialization - Setup Automático**
+
+**[MOSTRAR: GameInitializer.cs]**
+
+- "**GameInitializer**: Configuración completa del juego sin intervención manual"
+- "**InitializeGame**: Verificación y creación de componentes críticos"
+
+---
+
+## 🔧 SISTEMAS OPTIMIZADOS (3.5 minutos)
+
+### **1. Sistema de Estados Inteligente (60 segundos)**
+
+**[MOSTRAR: GameStateManager.cs - enum GameState y cambios de estado]**
 
 ```csharp
 public enum GameState {
     MainMenu, Playing, Paused, GameOver
 }
+
+public void ChangeState(GameState newState) {
+    // Control automático de Time.timeScale
+    // Notificación a todos los sistemas via eventos
+}
 ```
 
-"El GameStateManager controla automáticamente el flujo del juego:"
+"El **GameStateManager** orquesta todo el flujo del juego:"
 
-- "En menús: Time.timeScale = 0, spawners desactivados, input bloqueado"
-- "Durante juego: Time.timeScale = 1, todo activo"
-- "Transiciones automáticas entre estados"
+- "**Automatic Time Management**: Time.timeScale = 0 en menús, = 1 durante gameplay"
+- "**Event-Driven Architecture**: `OnStateChanged` notifica a todos los sistemas"
+- "**Smart UI Navigation**: MenuManager responde automáticamente a cambios de estado"
+- "**Spawner Control**: Asteroides y cristales solo aparecen en estado Playing"
 
-### **2. Sistema de Vidas y Respawn (60 segundos)**
+### **2. Sistema de Vidas y Respawn Robusto (75 segundos)**
 
-**[MOSTRAR: GameManager.cs - método PlayerDied()]**
+**[MOSTRAR: GameManager.cs - PlayerDied() y RespawnPlayer()]**
 
 ```csharp
 public void PlayerDied() {
     currentLives--;
+    UpdateLivesUI();
+
     if (currentLives <= 0) {
         GameOver();
     } else {
@@ -87,194 +98,297 @@ public void PlayerDied() {
 }
 ```
 
-"Mecánica de 4 vidas:"
+"**Mecánica de vidas avanzada**:"
 
-- "Cada colisión con asteroide resta 1 vida"
-- "Respawn automático tras 2 segundos si quedan vidas"
-- "Game Over solo cuando se agotan todas las vidas"
-- "El sistema recrea dinámicamente el prefab del jugador"
+- "4 vidas iniciales configurables con sistema de respawn inteligente"
+- "**Prefab Recreation**: El jugador se recrea completamente usando el prefab original"
+- "**Position Memory**: Respawn en la última posición válida registrada"
+- "**UI Sync**: Actualización automática de contadores de vidas en tiempo real"
+- "**Audio Integration**: Sonidos de muerte y respawn coordinados"
 
-### **3. Sistema de Spawning Inteligente (75 segundos)**
+### **3. Sistema de Daño Multi-Nivel (90 segundos)**
 
-**[MOSTRAR: AsteroidSpawner.cs - método Update() y SpawnAsteroid()]**
-
-"Los spawners respetan el estado del juego:"
+**[MOSTRAR: AsteroidController.cs - TakeDamage() y efectos visuales]**
 
 ```csharp
-void Update() {
-    if (!gameStateManager.IsInGame()) return;
-    // Solo spawner cuando estamos jugando
+public void TakeDamage(int damage) {
+    currentHealth -= damage;
+    StartCoroutine(DamageFlash());
+
+    if (currentHealth <= 0) {
+        DestroyAsteroid();
+    }
 }
 ```
 
-"Dificultad progresiva:"
+"**Sistema de salud por tipos**:"
 
-- "Factor de 0.95 reduce el tiempo entre spawns cada X segundos"
-- "Probabilidades configurables por tipo de asteroide"
-- "Límite mínimo para mantener jugabilidad"
+- "**Asteroides Small**: 1 HP → 30 puntos (estrategia rápida)"
+- "**Asteroides Medium**: 2 HP → 20 puntos (equilibrio)"
+- "**Asteroides Large**: 3 HP → 10 puntos (desafío vs recompensa)"
+- "**Visual Feedback**: Flash rojo al recibir daño, sprites configurables por tamaño"
+- "**Smart Collision**: Una bala por impacto, destrucción automática del proyectil"
 
----
+### **4. Sistema de Cristales Configurable (60 segundos)**
 
-## 🎵 SISTEMA DE AUDIO (60 segundos)
-
-**[MOSTRAR: GameManager.cs y MenuManager.cs - campos de audio]**
-
-"Sistema de audio dual:"
-
-- "**GameManager**: Música de fondo que se pausa/reanuda automáticamente"
-- "**MenuManager**: Efectos de UI y sonidos de botones"
+**[MOSTRAR: CrystalController.cs - enum CrystalType y ConfigureCrystalByType()]**
 
 ```csharp
-// Música que respeta estados del juego
-if (gameStateManager.IsInGame()) {
-    musicAudioSource.Play();
-} else {
-    musicAudioSource.Pause();
+public enum CrystalType {
+    Yellow, Blue, Red, Green
+}
+
+void ConfigureCrystalByType() {
+    // Configuración automática de sprites, colores y valores
 }
 ```
 
-"AudioSources separados para música y efectos, control automático según estado del juego"
+"**Cristales con rareza estratégica**:"
+
+- "**Yellow (50%)**: 50 pts - Base frecuente para progresión constante"
+- "**Blue (30%)**: 75 pts - Recompensa intermedia balanceada"
+- "**Red (15%)**: 100 pts - Cristal raro de alto valor"
+- "**Green (5%)**: 150 pts - Jackpot ultra-raro para momentos épicos"
+- "**Dual Scoring**: 100% puntos al disparar, 50% al contacto directo (incentiva precisión)"
 
 ---
 
-## 💾 PERSISTENCIA Y UI (90 segundos)
+## 🎵 SISTEMA DE AUDIO DUAL (75 segundos)
 
-### **Sistema de High Score (45 segundos)**
+**[MOSTRAR: GameManager.cs - configuración de AudioSources]**
 
-**[MOSTRAR: GameManager.cs - SaveHighScore()]**
+"**Arquitectura de audio separada**:"
+
+```csharp
+// GameManager - Música de fondo
+musicAudioSource.loop = true;
+musicAudioSource.volume = 0.3f;
+
+// MenuManager - Efectos de UI
+uiAudioSource.loop = false;
+uiAudioSource.playOnAwake = false;
+```
+
+**[MOSTRAR: Métodos PauseMusic() y ResumeMusic()]**
+
+"**Control inteligente de audio**:"
+
+- "**Background Music**: AudioSource dedicado que se pausa/reanuda automáticamente según estado del juego"
+- "**UI Sound Effects**: Sistema separado para botones, clicks, y feedback de interfaz"
+- "**State-Aware**: La música respeta automáticamente pausas, menús y game over"
+- "**Volume Management**: Niveles balanceados para música (30%) y efectos (100%)"
+- "**Fallback System**: El juego funciona perfectamente sin audio asignado"
+
+---
+
+## 💾 PERSISTENCIA Y UI AUTOMÁTICA (2 minutos)
+
+### **Sistema de High Score Persistente (45 segundos)**
+
+**[MOSTRAR: GameManager.cs - SaveHighScore() y LoadHighScore()]**
 
 ```csharp
 private void SaveHighScore() {
     PlayerPrefs.SetInt(HIGH_SCORE_KEY, highScore);
     PlayerPrefs.Save();
 }
-```
 
-"Puntuación persistente:"
-
-- "Usa PlayerPrefs de Unity para guardar entre sesiones"
-- "Verificación automática de nuevo récord en cada punto"
-- "Mostrado en tiempo real en todas las pantallas"
-
-### **UI Automática (45 segundos)**
-
-**[MOSTRAR: GameUIInitializer.cs - CreateUI()]**
-
-"El GameUIInitializer crea automáticamente:"
-
-- "Canvas con configuración correcta"
-- "Textos de puntuación y vidas con anclajes apropiados"
-- "Paneles de menú con botones funcionales"
-- "Todo con una sola llamada en Start()"
-
----
-
-## ⚡ OPTIMIZACIONES Y ROBUSTEZ (90 segundos)
-
-### **Gestión de Memoria (30 segundos)**
-
-**[MOSTRAR: AsteroidController.cs - destrucción automática]**
-
-- "Destrucción automática al salir de pantalla"
-- "Límites de elementos simultáneos"
-- "Pooling implícito mediante instanciación controlada"
-
-### **Manejo de Errores (30 segundos)**
-
-**[MOSTRAR: BackgroundSetup.cs - IsTagDefined()]**
-
-```csharp
-private bool IsTagDefined(string tagName) {
-    // Verificación segura de existencia de tags
+public void AddScore(int points) {
+    score += points;
+    if (score > highScore) {
+        highScore = score;
+        SaveHighScore();
+    }
+    UpdateScoreUI();
 }
 ```
 
-- "Verificación de componentes antes de usar"
-- "Manejo de tags faltantes"
-- "Sistemas de respaldo para funcionalidades críticas"
+"**Persistencia robusta**:"
 
-### **Arquitectura Modular (30 segundos)**
+- "**Automatic Saving**: Cada nuevo récord se guarda inmediatamente usando PlayerPrefs"
+- "**Cross-Session**: Los records persisten entre sesiones de juego"
+- "**UI Sync**: Actualización en tiempo real en menús y gameplay"
+- "**Validation**: Verificación automática de nuevos récords sin intervención manual"
 
-- "Patrón Singleton para managers"
-- "Separación clara de responsabilidades"
-- "Fácil extensión sin modificar código existente"
+### **UI Completamente Automatizada (75 segundos)**
 
----
+**[MOSTRAR: MenuManager.cs - CreateUIElements() y GameUIInitializer.cs]**
 
-## 🎯 MECÁNICAS DE BALANCE (60 segundos)
+```csharp
+private void CreateUIElements() {
+    // Creación automática de Canvas, paneles, botones y textos
+    // Configuración de anclajes, posiciones y eventos
+    // Integración automática con GameManager
+}
+```
 
-### **Ecuación de Dificultad**
+"**Zero-Setup UI System**:"
 
-**[MOSTRAR: AsteroidSpawner.cs - IncreaseDifficulty()]**
-
-"Balance inteligente:"
-
-- "Asteroides más resistentes dan menos puntos (incentiva estrategia)"
-- "Cristales raros valen más pero aparecen menos"
-- "Dificultad aumenta gradualmente sin volverse imposible"
-
-### **Sistema de Puntuación**
-
-- "Asteroides: 30pts (pequeño), 20pts (mediano), 10pts (grande)"
-- "Cristales: 50-150pts según rareza"
-- "Doble valor al disparar vs. recolectar por contacto"
+- "**MenuManager**: Crea automáticamente menú principal, gameplay UI, game over y pausa"
+- "**Smart Anchoring**: Textos de puntuación (superior izquierda), vidas (superior derecha)"
+- "**Button Events**: Conecta automáticamente funciones de juego, pausa, reinicio y salida"
+- "**Responsive Design**: Elementos se adaptan a diferentes resoluciones"
+- "**Duplicate Detection**: Sistema inteligente que previene UI duplicada"
+- "**GameUIInitializer**: Una sola línea de código inicializa todo el sistema UI"
 
 ---
 
-## 🚀 CONCLUSIÓN (30 segundos)
+## ⚡ OPTIMIZACIONES Y CÓDIGO LIMPIO (2 minutos)
 
-**[PANTALLA: Código completo del proyecto]**
+### **Gestión de Memoria Inteligente (45 segundos)**
 
-"En resumen, **Space Drop** implementa:"
+**[MOSTRAR: AsteroidController.cs - destrucción automática y BackgroundSetup.cs]**
 
-- "✅ Arquitectura modular con Singleton Managers"
-- "✅ Sistemas automáticos de UI y audio"
-- "✅ Persistencia de datos y balance inteligente"
-- "✅ Código robusto con manejo de errores"
+```csharp
+void Update() {
+    // Destrucción automática al salir de pantalla
+    if (transform.position.y < -6f || transform.position.x > 10f) {
+        Destroy(gameObject);
+    }
+}
+```
 
-"**2,500 líneas de C#** organizadas en **15 scripts principales** que crean una experiencia de juego completa y escalable."
+"**Optimizaciones de rendimiento**:"
 
-**[MOSTRAR: Gameplay final rápido]**
+- "**Automatic Cleanup**: Entidades se autodestruyen al salir de pantalla"
+- "**Smart Bounds**: Límites configurables para diferentes tipos de objetos"
+- "**Memory Efficient**: Sin pooling complejo, pero destrucción predictiva"
+- "**Background Management**: BackgroundSetup singleton previene duplicación de fondos"
 
-"¡Eso es todo! Un juego arcade completo con todas las características que esperarías de un título profesional. ¡Gracias por ver!"
+### **Arquitectura Robusta (45 segundos)**
+
+**[MOSTRAR: GameManager.cs - GetInstance() y verificaciones de null]**
+
+```csharp
+public static GameManager GetInstance() {
+    if (Instance == null) {
+        // Búsqueda inteligente o creación automática
+        GameManager existingManager = FindAnyObjectByType<GameManager>();
+        if (existingManager != null) {
+            Instance = existingManager;
+        } else {
+            // Creación automática con componentes necesarios
+        }
+    }
+    return Instance;
+}
+```
+
+"**Código a prueba de errores**:"
+
+- "**Singleton Pattern**: Managers con `GetInstance()` que autocrean si no existen"
+- "**Null Safety**: Verificaciones de componentes antes de usar"
+- "**Fallback Systems**: El juego funciona aunque falten elementos opcionales"
+- "**Component Validation**: Scripts verifican y añaden componentes requeridos automáticamente"
+
+### **Limpieza de Código (30 segundos)**
+
+**[MOSTRAR: Scripts sin métodos no utilizados]**
+
+"**Métodos optimizados**:"
+
+- "**Eliminación completa** de métodos no utilizados en todos los scripts principales"
+- "**Referencias verificadas**: Solo métodos públicos realmente llamados por otros sistemas"
+- "**Código limpio**: Sin comentarios obsoletos ni funcionalidad duplicada"
+- "**Arquitectura modular**: Cada script tiene responsabilidades claras y específicas"
 
 ---
 
-## 📋 NOTAS PARA EL VIDEO
+## 🎯 BALANCE DE JUEGO ESTRATÉGICO (75 segundos)
 
-### **Preparación**:
+### **Ecuación de Dificultad Inteligente**
 
-- Tener Unity abierto con el proyecto
-- Mostrar estructura de carpetas claramente
-- Preparar snippets de código clave
-- Tener gameplay grabado para mostrar
+**[MOSTRAR: AsteroidSpawner.cs y comparación de valores]**
 
-### **Tiempo por Sección**:
+"**Sistema de balance estratégico**:"
 
-- Intro: 30s
-- Arquitectura: 90s
-- Sistemas: 180s
-- Audio: 60s
-- UI/Persistencia: 90s
-- Optimización: 90s
-- Balance: 60s
-- Conclusión: 30s
-- **Total: 8.5 minutos**
+```csharp
+// Balance inverso: Más resistencia = Menos puntos
+Small Asteroid:  1 HP → 30 points (Estrategia rápida)
+Medium Asteroid: 2 HP → 20 points (Equilibrio)
+Large Asteroid:  3 HP → 10 points (Desafío vs recompensa)
+```
 
-### **Elementos Visuales**:
+"**Mecánicas que incentivan skill**:"
 
-- Alternar entre código y gameplay
-- Resaltar líneas importantes de código
-- Mostrar inspector de Unity cuando sea relevante
-- Usar zoom en secciones críticas del código
+- "**Risk vs Reward**: Asteroides grandes dan menos puntos pero requieren más munición"
+- "**Target Prioritization**: Players deben elegir qué atacar según situación"
+- "**Ammo Economy**: Cada bala cuenta, no hay spray and pray"
 
-### **Ritmo**:
+### **Sistema de Cristales Balanceado**
 
-- Explicación técnica pero accesible
-- No leer código completo, solo conceptos clave
-- Enfocarse en decisiones de diseño y arquitectura
-- Mantener energía constante
+**[MOSTRAR: CrystalController.cs - valores y probabilidades]**
+
+```csharp
+Yellow (50%): 50-25 pts    // Base constante
+Blue (30%):   75-37 pts    // Recompensa media
+Red (15%):    100-50 pts   // Cristal raro
+Green (5%):   150-75 pts   // Jackpot épico
+```
+
+"**Dual scoring system**:"
+
+- "100% puntos al disparar vs 50% al contacto → Incentiva precisión"
+- "Probabilidades decrecientes → Momentos de tensión y celebración"
+- "Valores progresivos → Cada cristal raro se siente especial"
 
 ---
 
-_¡Este guion te dará un video técnico pero dinámico que muestra la profesionalidad del código desarrollado!_
+## 🚀 CONCLUSIÓN - ARQUITECTURA PROFESIONAL (45 segundos)
+
+**[PANTALLA: Código limpio + estructura modular]**
+
+"**Space Drop** demuestra arquitectura de nivel profesional:"
+
+"✅ **Arquitectura Moderna**: Singleton Managers + Event-Driven Systems + Zero-Setup UI"  
+"✅ **Código Optimizado**: Métodos no utilizados eliminados + Verificaciones robustas + Fallback systems"  
+"✅ **Sistemas Automatizados**: UI autogenerada + Estados inteligentes + Audio responsivo"  
+"✅ **Balance Estratégico**: Mecánicas que recompensan skill + Progresión balanceada"
+
+"**15 scripts principales** organizados en **arquitectura modular** que crean **2,800+ líneas de C# limpio y optimizado**."
+
+**[MOSTRAR: Gameplay final destacando: UI automática, efectos visuales, respawn, menús]**
+
+"Un juego arcade completo con **automatización total del setup**, **código mantenible**, y **experiencia de usuario pulida**. ¡Así se desarrolla software moderno en Unity!"
+
+---
+
+## 📋 NOTAS TÉCNICAS PARA EL VIDEO
+
+### **Preparación Requerida**:
+
+- Unity abierto con proyecto + estructura de carpetas visible
+- Scripts principales marcados para mostrar arquitectura
+- Gameplay grabado mostrando: respawn, asteroides multi-hit, cristales coloridos, UI automática
+- Comparación antes/después de limpieza de código
+
+### **Tiempo Optimizado por Sección**:
+
+- **Intro**: 45s → Arquitectura moderna y gameplay avanzado
+- **Arquitectura**: 120s → Estructura modular detallada
+- **Sistemas**: 210s → Mecánicas optimizadas y código limpio
+- **Audio**: 75s → Sistema dual y control inteligente
+- **UI/Persistencia**: 120s → Automatización completa
+- **Optimización**: 120s → Limpieza y robustez
+- **Balance**: 75s → Mecánicas estratégicas
+- **Conclusión**: 45s → Resumen profesional
+- **Total: 10.8 minutos**
+
+### **Elementos Visuales Clave**:
+
+- **Code Focus**: Mostrar métodos específicos, no archivos completos
+- **Architecture Diagrams**: Estructura de carpetas y dependencias
+- **Gameplay Highlights**: Efectos visuales, UI automática, sistemas trabajando
+- **Before/After**: Código limpio vs código con métodos no utilizados
+- **Professional Polish**: Enfoque en automatización y arquitectura
+
+### **Ritmo y Tonalidad**:
+
+- **Técnico pero Accesible**: Explicar decisiones de arquitectura
+- **Enfoque en Modernidad**: Destacar patrones profesionales y código limpio
+- **Demostrar Automatización**: Zero-setup como ventaja competitiva
+- **Arquitectura como Historia**: Cada sistema contribuye al conjunto
+
+---
+
+_¡Este guion presenta Space Drop como un ejemplo de desarrollo moderno en Unity, destacando arquitectura profesional, automatización completa y código limpio optimizado!_
